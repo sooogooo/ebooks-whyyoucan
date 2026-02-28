@@ -19,3 +19,4 @@ Thumbs.db
 # 隐藏文件（保留 .git 和 .gitignore）
 .*
 !.gitignore
+.env
