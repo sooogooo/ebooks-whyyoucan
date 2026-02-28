@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { ArrowRight, BookOpen, Zap, Target } from 'lucide-react'
+import { ArrowRight, BookOpen, Zap, Target, Sparkles } from 'lucide-react'
+import GradientBackground from '../components/GradientBackground'
 
 export default function Home() {
   const [chapters, setChapters] = useState([])
@@ -29,6 +30,7 @@ export default function Home() {
 
   return (
     <div style={styles.container}>
+      <GradientBackground />
       <section style={styles.hero}>
         <div style={styles.heroContent} className="fade-in">
           <img
@@ -43,7 +45,7 @@ export default function Home() {
             <h1 style={styles.heroTitle}>凭什么</h1>
             <p style={styles.heroSubtitle}>一句话终结无效争吵的反击心法</p>
             <p style={styles.heroDescription}>
-              从你开口说出"你听我解释"那五个字的那一刻起，你就已经输了。
+              从你开口说出「你听我解释」那五个字的那一刻起，你就已经输了。
             </p>
             <div style={styles.heroActions}>
               <Link to="/quick-guide" style={styles.primaryButton} className="fade-in">
@@ -74,7 +76,7 @@ export default function Home() {
             color="var(--color-success)"
           />
           <FeatureCard
-            icon={<Zap size={32} />}
+            icon={<Sparkles size={32} />}
             title="AI助手"
             description="智能分析你的情况，提供个性化建议"
             color="var(--color-warning)"
@@ -101,7 +103,7 @@ export default function Home() {
       <section style={styles.quote}>
         <blockquote style={styles.blockquote}>
           <p style={styles.quoteText}>
-            "愿你的善良，从此带点锋芒。"
+            「愿你的善良，从此带点锋芒。」
           </p>
         </blockquote>
       </section>
@@ -111,7 +113,7 @@ export default function Home() {
 
 function FeatureCard({ icon, title, description, color }) {
   return (
-    <div style={styles.featureCard}>
+    <div style={styles.featureCard} className="card-hover">
       <div style={{ ...styles.featureIcon, color }}>{icon}</div>
       <h3 style={styles.featureTitle}>{title}</h3>
       <p style={styles.featureDescription}>{description}</p>
@@ -121,7 +123,7 @@ function FeatureCard({ icon, title, description, color }) {
 
 function ChapterCard({ chapter }) {
   return (
-    <Link to={`/chapter/${chapter.slug}`} style={styles.chapterCard}>
+    <Link to={`/chapter/${chapter.slug}`} style={styles.chapterCard} className="card-hover">
       {chapter.image_url && (
         <img src={chapter.image_url} alt={chapter.title} style={styles.chapterImage} />
       )}
@@ -248,9 +250,10 @@ const styles = {
   },
   featureCard: {
     padding: 'calc(var(--spacing-unit) * 4)',
-    backgroundColor: 'var(--color-bg-secondary)',
+    background: 'linear-gradient(135deg, var(--color-bg-secondary) 0%, var(--color-bg) 100%)',
     borderRadius: 'var(--border-radius-lg)',
     textAlign: 'center',
+    border: '1px solid var(--color-border)',
   },
   featureIcon: {
     marginBottom: 'calc(var(--spacing-unit) * 2)',
@@ -285,7 +288,7 @@ const styles = {
     gap: 'calc(var(--spacing-unit) * 3)',
   },
   chapterCard: {
-    backgroundColor: 'var(--color-bg)',
+    background: 'linear-gradient(to bottom, var(--color-bg) 0%, var(--color-bg-secondary) 100%)',
     border: '1px solid var(--color-border)',
     borderRadius: 'var(--border-radius-lg)',
     overflow: 'hidden',

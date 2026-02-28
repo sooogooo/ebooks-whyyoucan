@@ -20,7 +20,7 @@ export default function AITextSelection({ selectedText, position, onClose, onAsk
   }
 
   const handleAskAI = () => {
-    onAskAI(`请解释这段话："${selectedText}"`)
+    onAskAI(`请解释这段话：「${selectedText}」`)
     onClose()
   }
 
@@ -69,15 +69,15 @@ async function generateExplanation(text) {
   await new Promise((resolve) => setTimeout(resolve, 600))
 
   if (text.includes('凭什么') || text.includes('反问')) {
-    return '这是核心反击技巧："凭什么？"通过反问，你把举证责任从自己身上转移到对方身上，让对方来证明他的指责是有依据的。'
+    return '这是核心反击技巧：「凭什么？」通过反问，你把举证责任从自己身上转移到对方身上，让对方来证明他的指责是有依据的。'
   }
 
   if (text.includes('不解释') || text.includes('不接球') || text.includes('不自证')) {
-    return '这是三大核心原则。"不解释"意味着不要急于辩护；"不接球"是不要接对方扔过来的攻击；"不自证"是不要主动证明自己是清白的。违背这些原则会让你陷入被动。'
+    return '这是三大核心原则。「不解释」意味着不要急于辩护；「不接球」是不要接对方扔过来的攻击；「不自证」是不要主动证明自己是清白的。违背这些原则会让你陷入被动。'
   }
 
   if (text.includes('从来') || text.includes('总是') || text.includes('全称')) {
-    return '这是全称量词的拆解技巧。"从来""总是""每次"这些词语很容易被反驳，只要有一个反例就能推翻。通过反问"从来是指一次都没有吗？"来要求对方具体化指责。'
+    return '这是全称量词的拆解技巧。「从来」「总是」「每次」这些词语很容易被反驳，只要有一个反例就能推翻。通过反问「从来是指一次都没有吗？」来要求对方具体化指责。'
   }
 
   if (text.includes('停顿') || text.includes('3秒')) {
