@@ -50,7 +50,7 @@ function App() {
           <Route index element={<Home />} />
           <Route path="chapter/:slug" element={<ChapterReader session={session} />} />
           <Route path="quick-guide" element={<QuickGuide />} />
-          <Route path="ai" element={<AIAssistant session={session} />} />
+          <Route path="ai-assistant" element={<AIAssistant session={session} />} />
           <Route path="practice" element={<Practice session={session} />} />
           <Route path="progress" element={<Progress session={session} />} />
         </Route>

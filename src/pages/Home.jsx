@@ -30,24 +30,27 @@ export default function Home() {
   return (
     <div style={styles.container}>
       <section style={styles.hero}>
-        <div style={styles.heroContent}>
+        <div style={styles.heroContent} className="fade-in">
           <img
             src="https://images.pexels.com/photos/5940841/pexels-photo-5940841.jpeg?auto=compress&cs=tinysrgb&w=1200"
             alt="Hero"
             style={styles.heroImage}
           />
           <div style={styles.heroText}>
+            <div style={styles.logoHero}>
+              <img src="/logo.svg" alt="凭什么" style={styles.logoHeroImage} />
+            </div>
             <h1 style={styles.heroTitle}>凭什么</h1>
             <p style={styles.heroSubtitle}>一句话终结无效争吵的反击心法</p>
             <p style={styles.heroDescription}>
               从你开口说出"你听我解释"那五个字的那一刻起，你就已经输了。
             </p>
             <div style={styles.heroActions}>
-              <Link to="/quick-guide" style={styles.primaryButton}>
+              <Link to="/quick-guide" style={styles.primaryButton} className="fade-in">
                 <Zap size={18} />
                 快速入门
               </Link>
-              <Link to="/practice" style={styles.secondaryButton}>
+              <Link to="/practice" style={styles.secondaryButton} className="fade-in">
                 <Target size={18} />
                 开始练习
               </Link>
@@ -174,6 +177,15 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     gap: 'calc(var(--spacing-unit) * 2)',
+    alignItems: 'center',
+    textAlign: 'center',
+  },
+  logoHero: {
+    marginBottom: 'calc(var(--spacing-unit) * 2)',
+  },
+  logoHeroImage: {
+    width: '96px',
+    height: '96px',
   },
   heroTitle: {
     fontSize: '3rem',
@@ -196,29 +208,33 @@ const styles = {
     gap: 'calc(var(--spacing-unit) * 2)',
     marginTop: 'calc(var(--spacing-unit) * 2)',
     flexWrap: 'wrap',
+    justifyContent: 'center',
   },
   primaryButton: {
     display: 'flex',
     alignItems: 'center',
     gap: 'calc(var(--spacing-unit) * 1)',
-    padding: 'calc(var(--spacing-unit) * 2) calc(var(--spacing-unit) * 4)',
+    padding: 'calc(var(--spacing-unit) * 2.5) calc(var(--spacing-unit) * 5)',
     backgroundColor: 'var(--color-primary)',
     color: 'white',
     borderRadius: 'var(--border-radius-md)',
     fontWeight: 600,
     fontSize: '1rem',
+    boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)',
+    transition: 'all var(--transition-fast)',
   },
   secondaryButton: {
     display: 'flex',
     alignItems: 'center',
     gap: 'calc(var(--spacing-unit) * 1)',
-    padding: 'calc(var(--spacing-unit) * 2) calc(var(--spacing-unit) * 4)',
+    padding: 'calc(var(--spacing-unit) * 2.5) calc(var(--spacing-unit) * 5)',
     backgroundColor: 'transparent',
     color: 'var(--color-primary)',
     border: '2px solid var(--color-primary)',
     borderRadius: 'var(--border-radius-md)',
     fontWeight: 600,
     fontSize: '1rem',
+    transition: 'all var(--transition-fast)',
   },
   features: {
     maxWidth: '1200px',

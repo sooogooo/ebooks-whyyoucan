@@ -15,8 +15,11 @@ export default function Header({ session }) {
       <header style={styles.header}>
         <div style={styles.container}>
           <Link to="/" style={styles.logo}>
-            <h1 style={styles.logoText}>凭什么</h1>
-            <span style={styles.subtitle}>反击心法</span>
+            <img src="/logo.svg" alt="凭什么" style={styles.logoImage} />
+            <div style={styles.logoTextContainer}>
+              <h1 style={styles.logoText}>凭什么</h1>
+              <span style={styles.subtitle}>反击心法</span>
+            </div>
           </Link>
 
           <div style={styles.actions}>
@@ -131,6 +134,15 @@ const styles = {
     alignItems: 'center',
   },
   logo: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 'calc(var(--spacing-unit) * 2)',
+  },
+  logoImage: {
+    width: '48px',
+    height: '48px',
+  },
+  logoTextContainer: {
     display: 'flex',
     flexDirection: 'column',
     gap: 'calc(var(--spacing-unit) * 0.5)',

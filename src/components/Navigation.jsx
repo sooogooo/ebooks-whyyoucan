@@ -7,9 +7,9 @@ export default function Navigation() {
   const navItems = [
     { path: '/', icon: Home, label: '首页' },
     { path: '/quick-guide', icon: BookOpen, label: '快速入门' },
-    { path: '/practice', icon: Target, label: '实战练习' },
-    { path: '/ai', icon: Sparkles, label: 'AI助手' },
-    { path: '/progress', icon: TrendingUp, label: '我的进度' },
+    { path: '/practice', icon: Target, label: '练习' },
+    { path: '/ai-assistant', icon: Sparkles, label: 'AI' },
+    { path: '/progress', icon: TrendingUp, label: '进度' },
   ]
 
   return (
@@ -38,15 +38,17 @@ export default function Navigation() {
 
 const styles = {
   nav: {
-    position: 'sticky',
+    position: 'fixed',
     bottom: 0,
+    left: 0,
+    right: 0,
     backgroundColor: 'var(--color-bg)',
     borderTop: '1px solid var(--color-border)',
     boxShadow: '0 -2px 10px var(--color-shadow)',
     zIndex: 100,
   },
   container: {
-    maxWidth: '1200px',
+    maxWidth: '768px',
     margin: '0 auto',
     display: 'grid',
     gridTemplateColumns: 'repeat(5, 1fr)',
@@ -56,16 +58,16 @@ const styles = {
     flexDirection: 'column',
     alignItems: 'center',
     gap: 'calc(var(--spacing-unit) * 0.5)',
-    padding: 'calc(var(--spacing-unit) * 1.5) calc(var(--spacing-unit) * 1)',
+    padding: 'calc(var(--spacing-unit) * 2) calc(var(--spacing-unit) * 1)',
     color: 'var(--color-text-secondary)',
     transition: 'all var(--transition-fast)',
   },
   navItemActive: {
     color: 'var(--color-primary)',
-    backgroundColor: 'var(--color-primary-light)',
+    transform: 'translateY(-2px)',
   },
   label: {
-    fontSize: '0.75rem',
+    fontSize: '0.7rem',
     fontWeight: 500,
   },
 }

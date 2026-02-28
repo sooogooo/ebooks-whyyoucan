@@ -1,14 +1,20 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import ReactMarkdown from 'react-markdown'
-import { ArrowLeft, Bookmark, CheckCircle } from 'lucide-react'
+import { ArrowLeft, Bookmark, CheckCircle, MessageSquare, Sparkles } from 'lucide-react'
+import AIReadingAssistant from '../components/AIReadingAssistant'
+import AITextSelection from '../components/AITextSelection'
 
 export default function ChapterReader({ session }) {
   const { slug } = useParams()
   const [chapter, setChapter] = useState(null)
   const [loading, setLoading] = useState(true)
   const [progress, setProgress] = useState(null)
+  const [showAIAssistant, setShowAIAssistant] = useState(false)
+  const [selectedText, setSelectedText] = useState('')
+  const [selectionPosition, setSelectionPosition] = useState(null)
+  const contentRef = useRef(null)
 
   useEffect(() => {
     loadChapter()
@@ -42,6 +48,32 @@ export default function ChapterReader({ session }) {
     }
   }
 
+  useEffect(() => {
+    const handleSelection = () => {
+      const selection = window.getSelection()
+      const text = selection.toString().trim()
+
+      if (text && text.length > 5 && text.length < 500) {
+        const range = selection.getRangeAt(0)
+        const rect = range.getBoundingClientRect()
+
+        setSelectedText(text)
+        setSelectionPosition({
+          top: rect.bottom + window.scrollY + 10,
+          left: rect.left + window.scrollX,
+        })
+      } else {
+        setSelectedText('')
+        setSelectionPosition(null)
+      }
+    }
+
+    document.addEventListener('mouseup', handleSelection)
+    return () => {
+      document.removeEventListener('mouseup', handleSelection)
+    }
+  }, [])
+
   const markAsComplete = async () => {
     if (!session || !chapter) return
 
@@ -60,6 +92,15 @@ export default function ChapterReader({ session }) {
     } catch (error) {
       console.error('Error marking as complete:', error)
     }
+  }
+
+  const handleCloseSelection = () => {
+    setSelectedText('')
+    setSelectionPosition(null)
+  }
+
+  const handleAskAI = (question) => {
+    setShowAIAssistant(true)
   }
 
   if (loading) {
@@ -82,18 +123,28 @@ export default function ChapterReader({ session }) {
           <ArrowLeft size={20} />
           <span>返回</span>
         </Link>
-        {session && (
+        <div style={styles.headerActions}>
           <button
-            onClick={markAsComplete}
-            style={{
-              ...styles.completeButton,
-              ...(progress?.completed ? styles.completedButton : {}),
-            }}
+            onClick={() => setShowAIAssistant(true)}
+            style={styles.aiButton}
+            title="打开AI阅读助手"
           >
-            <CheckCircle size={18} />
-            <span>{progress?.completed ? '已完成' : '标记为完成'}</span>
+            <Sparkles size={18} />
+            <span>AI助手</span>
           </button>
-        )}
+          {session && (
+            <button
+              onClick={markAsComplete}
+              style={{
+                ...styles.completeButton,
+                ...(progress?.completed ? styles.completedButton : {}),
+              }}
+            >
+              <CheckCircle size={18} />
+              <span>{progress?.completed ? '已完成' : '标记为完成'}</span>
+            </button>
+          )}
+        </div>
       </div>
 
       {chapter.image_url && (
@@ -133,6 +184,31 @@ export default function ChapterReader({ session }) {
           </ReactMarkdown>
         </div>
       </article>
+
+      <AITextSelection
+        selectedText={selectedText}
+        position={selectionPosition}
+        onClose={handleCloseSelection}
+        onAskAI={handleAskAI}
+      />
+
+      <AIReadingAssistant
+        chapterContent={chapter?.content}
+        chapterTitle={chapter?.title}
+        session={session}
+        isOpen={showAIAssistant}
+        onClose={() => setShowAIAssistant(false)}
+      />
+
+      {showAIAssistant && (
+        <button
+          onClick={() => setShowAIAssistant(false)}
+          style={styles.floatingCloseButton}
+          title="关闭AI助手"
+        >
+          <MessageSquare size={24} />
+        </button>
+      )}
     </div>
   )
 }
@@ -176,6 +252,22 @@ const styles = {
     color: 'var(--color-text-secondary)',
     fontWeight: 500,
   },
+  headerActions: {
+    display: 'flex',
+    gap: 'calc(var(--spacing-unit) * 2)',
+    alignItems: 'center',
+  },
+  aiButton: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 'calc(var(--spacing-unit) * 1)',
+    padding: 'calc(var(--spacing-unit) * 1.5) calc(var(--spacing-unit) * 2)',
+    backgroundColor: 'var(--color-primary)',
+    color: 'white',
+    borderRadius: 'var(--border-radius-md)',
+    fontSize: '0.875rem',
+    fontWeight: 500,
+  },
   completeButton: {
     display: 'flex',
     alignItems: 'center',
@@ -189,6 +281,21 @@ const styles = {
   },
   completedButton: {
     backgroundColor: 'var(--color-text-tertiary)',
+  },
+  floatingCloseButton: {
+    position: 'fixed',
+    bottom: 'calc(var(--spacing-unit) * 10)',
+    right: 'calc(var(--spacing-unit) * 3)',
+    width: '56px',
+    height: '56px',
+    borderRadius: '50%',
+    backgroundColor: 'var(--color-primary)',
+    color: 'white',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: 'var(--shadow-lg)',
+    zIndex: 999,
   },
   headerImage: {
     width: '100%',

@@ -115,3 +115,79 @@ img {
   h2 { font-size: 2rem; }
   h3 { font-size: 1.5rem; }
 }
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+.slide-in-right {
+  animation: slideInRight 0.5s ease forwards;
+}
+
+.slide-in-left {
+  animation: slideInLeft 0.5s ease forwards;
+}
+
+.selection-highlight {
+  background: linear-gradient(120deg, #dbeafe 0%, #bfdbfe 100%);
+  cursor: pointer;
+  border-radius: 3px;
+  padding: 2px 4px;
+  margin: -2px -4px;
+  transition: all 0.2s ease;
+}
+
+.selection-highlight:hover {
+  background: linear-gradient(120deg, #bfdbfe 0%, #93c5fd 100%);
+}
