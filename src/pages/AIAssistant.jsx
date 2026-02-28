@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Send, Sparkles, MessageSquare } from 'lucide-react'
+import { Send, Sparkles, MessageSquare, Share2 } from 'lucide-react'
+import ShareModal from '../components/ShareModal'
 
 export default function AIAssistant({ session }) {
   const [messages, setMessages] = useState([
@@ -10,6 +11,7 @@ export default function AIAssistant({ session }) {
   ])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const [shareData, setShareData] = useState(null)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -84,6 +86,20 @@ export default function AIAssistant({ session }) {
                     {line}
                   </p>
                 ))}
+                {message.role === 'assistant' && index > 0 && (
+                  <button
+                    onClick={() => setShareData({
+                      title: 'AI助手建议',
+                      content: message.content,
+                      category: 'AI问答',
+                      theme: 'wisdom',
+                    })}
+                    style={styles.shareInlineBtn}
+                  >
+                    <Share2 size={14} />
+                    <span>分享</span>
+                  </button>
+                )}
               </div>
             </div>
           ))}
@@ -140,6 +156,17 @@ export default function AIAssistant({ session }) {
           </button>
         </form>
       </div>
+
+      {shareData && (
+        <ShareModal
+          isOpen={!!shareData}
+          onClose={() => setShareData(null)}
+          title={shareData.title}
+          content={shareData.content}
+          category={shareData.category}
+          theme={shareData.theme}
+        />
+      )}
     </div>
   )
 }
@@ -314,5 +341,20 @@ const styles = {
   sendButtonDisabled: {
     backgroundColor: 'var(--color-text-tertiary)',
     cursor: 'not-allowed',
+  },
+  shareInlineBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px',
+    marginTop: 'calc(var(--spacing-unit) * 1.5)',
+    padding: '4px 10px',
+    fontSize: '0.75rem',
+    color: 'var(--color-text-tertiary)',
+    backgroundColor: 'transparent',
+    border: '1px solid var(--color-border)',
+    borderRadius: 'var(--border-radius-sm)',
+    cursor: 'pointer',
+    transition: 'all var(--transition-fast)',
+    alignSelf: 'flex-start',
   },
 }

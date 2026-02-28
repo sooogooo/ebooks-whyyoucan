@@ -2,7 +2,8 @@ import { useEffect, useState, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import ReactMarkdown from 'react-markdown'
-import { ArrowLeft, Bookmark, CheckCircle, MessageSquare, Sparkles } from 'lucide-react'
+import { ArrowLeft, Bookmark, CheckCircle, MessageSquare, Sparkles, Share2 } from 'lucide-react'
+import ShareModal from '../components/ShareModal'
 import AIReadingAssistant from '../components/AIReadingAssistant'
 import AITextSelection from '../components/AITextSelection'
 
@@ -14,6 +15,7 @@ export default function ChapterReader({ session }) {
   const [showAIAssistant, setShowAIAssistant] = useState(false)
   const [selectedText, setSelectedText] = useState('')
   const [selectionPosition, setSelectionPosition] = useState(null)
+  const [showShareModal, setShowShareModal] = useState(false)
   const contentRef = useRef(null)
 
   useEffect(() => {
@@ -125,6 +127,13 @@ export default function ChapterReader({ session }) {
         </Link>
         <div style={styles.headerActions}>
           <button
+            onClick={() => setShowShareModal(true)}
+            style={styles.shareBtn}
+            title="分享本章"
+          >
+            <Share2 size={18} />
+          </button>
+          <button
             onClick={() => setShowAIAssistant(true)}
             style={styles.aiButton}
             title="打开AI阅读助手"
@@ -209,6 +218,17 @@ export default function ChapterReader({ session }) {
           <MessageSquare size={24} />
         </button>
       )}
+
+      {showShareModal && chapter && (
+        <ShareModal
+          isOpen={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          title={chapter.title}
+          content={chapter.subtitle || chapter.content?.slice(0, 200) || ''}
+          category={chapter.chapter_type === 'rule' ? '反击铁律' : '反击心法'}
+          theme="wisdom"
+        />
+      )}
     </div>
   )
 }
@@ -256,6 +276,19 @@ const styles = {
     display: 'flex',
     gap: 'calc(var(--spacing-unit) * 2)',
     alignItems: 'center',
+  },
+  shareBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '36px',
+    height: '36px',
+    backgroundColor: 'var(--color-bg-secondary)',
+    color: 'var(--color-text-secondary)',
+    border: '1px solid var(--color-border)',
+    borderRadius: 'var(--border-radius-md)',
+    cursor: 'pointer',
+    transition: 'all var(--transition-fast)',
   },
   aiButton: {
     display: 'flex',

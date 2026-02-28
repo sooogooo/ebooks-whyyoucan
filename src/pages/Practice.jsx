@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { MessageCircle, RefreshCw, Sparkles } from 'lucide-react'
+import { MessageCircle, RefreshCw, Sparkles, Share2 } from 'lucide-react'
+import ShareModal from '../components/ShareModal'
 
 const scenarios = [
   {
@@ -119,6 +120,7 @@ export default function Practice({ session }) {
   const [showHints, setShowHints] = useState(false)
   const [showAnswers, setShowAnswers] = useState(false)
   const [userResponse, setUserResponse] = useState('')
+  const [showShareModal, setShowShareModal] = useState(false)
 
   const handleNewScenario = () => {
     const randomIndex = Math.floor(Math.random() * scenarios.length)
@@ -203,7 +205,16 @@ export default function Practice({ session }) {
             {showAnswers && (
               <div style={styles.answersBox}>
                 <div style={styles.goodAnswers}>
-                  <h3 style={styles.answersTitle}>推荐回应</h3>
+                  <div style={styles.answersHeader}>
+                    <h3 style={{ ...styles.answersTitle, marginBottom: 0 }}>推荐回应</h3>
+                    <button
+                      onClick={() => setShowShareModal(true)}
+                      style={styles.shareSmallBtn}
+                    >
+                      <Share2 size={14} />
+                      分享
+                    </button>
+                  </div>
                   <ul style={styles.answersList}>
                     {currentScenario.goodResponses.map((response, index) => (
                       <li key={index} style={styles.answerItem}>{response}</li>
@@ -223,6 +234,17 @@ export default function Practice({ session }) {
             )}
           </div>
         </div>
+
+        {showShareModal && (
+          <ShareModal
+            isOpen={showShareModal}
+            onClose={() => setShowShareModal(false)}
+            title={`场景：${currentScenario.category}`}
+            content={`${currentScenario.situation}\n\n推荐回应：\n${currentScenario.goodResponses.map((r, i) => `${i + 1}. ${r}`).join('\n')}`}
+            category="实战练习"
+            theme="calm"
+          />
+        )}
 
         <div style={styles.tipBox}>
           <h3 style={styles.tipTitle}>练习建议</h3>
@@ -391,10 +413,30 @@ const styles = {
     backgroundColor: '#fee2e2',
     borderRadius: 'var(--border-radius-md)',
   },
+  answersHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 'calc(var(--spacing-unit) * 2)',
+  },
   answersTitle: {
     fontSize: '1.125rem',
     fontWeight: 700,
     marginBottom: 'calc(var(--spacing-unit) * 2)',
+  },
+  shareSmallBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px',
+    padding: '4px 10px',
+    fontSize: '0.75rem',
+    fontWeight: 500,
+    color: 'var(--color-text-secondary)',
+    backgroundColor: 'rgba(255,255,255,0.6)',
+    border: '1px solid var(--color-border)',
+    borderRadius: 'var(--border-radius-sm)',
+    cursor: 'pointer',
+    transition: 'all var(--transition-fast)',
   },
   answersList: {
     paddingLeft: 'calc(var(--spacing-unit) * 3)',

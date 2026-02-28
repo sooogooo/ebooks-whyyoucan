@@ -1,6 +1,14 @@
-import { AlertCircle, CheckCircle, Zap } from 'lucide-react'
+import { useState } from 'react'
+import { AlertCircle, CheckCircle, Zap, Share2 } from 'lucide-react'
+import ShareModal from '../components/ShareModal'
 
 export default function QuickGuide() {
+  const [shareData, setShareData] = useState(null)
+
+  const shareContent = (title, content, theme = 'wisdom') => {
+    setShareData({ title, content, category: '快速入门', theme })
+  }
+
   return (
     <div style={styles.container}>
       <img
@@ -23,11 +31,35 @@ export default function QuickGuide() {
             <p style={styles.formulaNote}>
               就这么简单。不解释，不辩护，不自证。把论证的负担还给对方。
             </p>
+            <button
+              onClick={() => shareContent(
+                '核心公式',
+                '攻击 → 停顿3秒 → 反问「凭什么？」→ 把球踢回去\n\n就这么简单。不解释，不辩护，不自证。把论证的负担还给对方。',
+                'bold'
+              )}
+              style={styles.shareSectionBtn}
+            >
+              <Share2 size={16} />
+              分享公式
+            </button>
           </div>
         </section>
 
         <section style={styles.section}>
-          <h2 style={styles.sectionTitle}>三条铁律</h2>
+          <div style={styles.sectionHeader}>
+            <h2 style={{ ...styles.sectionTitle, marginBottom: 0 }}>三条铁律</h2>
+            <button
+              onClick={() => shareContent(
+                '三条铁律',
+                '1. 不解释 - 解释=认输。你一解释，就承认了对方有审判你的权力\n\n2. 不接球 - 对方扔过来的攻击，不要接。直接砸一个新球回去\n\n3. 不自证 - 让他出示证据，让他定义标准，让他来说明凭什么',
+                'calm'
+              )}
+              style={styles.shareSectionBtn}
+            >
+              <Share2 size={16} />
+              分享
+            </button>
+          </div>
           <div style={styles.rulesGrid}>
             <RuleCard
               number="1"
@@ -51,7 +83,20 @@ export default function QuickGuide() {
         </section>
 
         <section style={styles.section}>
-          <h2 style={styles.sectionTitle}>万能起手式</h2>
+          <div style={styles.sectionHeader}>
+            <h2 style={{ ...styles.sectionTitle, marginBottom: 0 }}>万能起手式</h2>
+            <button
+              onClick={() => shareContent(
+                '万能起手式',
+                '基础版：「凭什么？」\n\n进阶版：\n- 你的依据是什么？\n- 谁给你的权力？\n- 你的标准是什么？\n- 你来定义一下？\n- 「从来」是指一次都没有吗？',
+                'warm'
+              )}
+              style={styles.shareSectionBtn}
+            >
+              <Share2 size={16} />
+              分享
+            </button>
+          </div>
 
           <div style={styles.starterBox}>
             <div style={styles.starterMain}>
@@ -130,7 +175,20 @@ export default function QuickGuide() {
         </section>
 
         <section style={styles.section}>
-          <h2 style={styles.sectionTitle}>急救话术</h2>
+          <div style={styles.sectionHeader}>
+            <h2 style={{ ...styles.sectionTitle, marginBottom: 0 }}>急救话术</h2>
+            <button
+              onClick={() => shareContent(
+                '急救话术',
+                '1. 万能起手式：凭什么？\n\n2. 要求具体化：你说我不___，能具体说说吗？是什么时候、什么场景？\n\n3. 反问标准：你说的「从来不」「总是」是什么意思？能举个具体的例子吗？',
+                'bold'
+              )}
+              style={styles.shareSectionBtn}
+            >
+              <Share2 size={16} />
+              分享
+            </button>
+          </div>
           <div style={styles.phrasesGrid}>
             <PhraseCard
               number="1"
@@ -150,6 +208,17 @@ export default function QuickGuide() {
           </div>
         </section>
       </div>
+
+      {shareData && (
+        <ShareModal
+          isOpen={!!shareData}
+          onClose={() => setShareData(null)}
+          title={shareData.title}
+          content={shareData.content}
+          category={shareData.category}
+          theme={shareData.theme}
+        />
+      )}
     </div>
   )
 }
@@ -221,10 +290,31 @@ const styles = {
   section: {
     marginBottom: 'calc(var(--spacing-unit) * 8)',
   },
+  sectionHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 'calc(var(--spacing-unit) * 4)',
+  },
   sectionTitle: {
     fontSize: '1.75rem',
     fontWeight: 700,
     marginBottom: 'calc(var(--spacing-unit) * 4)',
+  },
+  shareSectionBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    padding: '8px 14px',
+    fontSize: '0.8rem',
+    fontWeight: 500,
+    color: 'var(--color-text-secondary)',
+    backgroundColor: 'var(--color-bg)',
+    border: '1px solid var(--color-border)',
+    borderRadius: 'var(--border-radius-md)',
+    cursor: 'pointer',
+    transition: 'all var(--transition-fast)',
+    whiteSpace: 'nowrap',
   },
   formula: {
     textAlign: 'center',
