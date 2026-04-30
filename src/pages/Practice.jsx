@@ -147,11 +147,11 @@ export default function Practice({ session }) {
           maxWidth: '720px',
           margin: '0 auto calc(var(--spacing-unit) * 3)',
           padding: 'calc(var(--spacing-unit) * 2.5) calc(var(--spacing-unit) * 3)',
-          background: 'linear-gradient(135deg, #2563eb 0%, #10b981 100%)',
+          background: 'linear-gradient(135deg, #c97b63 0%, #d9a273 50%, #7fa88a 100%)',
           color: 'white',
           borderRadius: 'var(--border-radius-lg)',
           textDecoration: 'none',
-          boxShadow: '0 8px 24px rgba(37,99,235,0.25)',
+          boxShadow: '0 12px 32px rgba(201, 123, 99, 0.3)',
         }}
       >
         <Swords size={28} />

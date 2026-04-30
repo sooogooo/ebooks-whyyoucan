@@ -36,18 +36,20 @@ export default function Home({ session }) {
       <section style={styles.hero}>
         <div style={styles.heroContent} className="fade-in">
           <img
-            src="https://images.pexels.com/photos/5940841/pexels-photo-5940841.jpeg?auto=compress&cs=tinysrgb&w=1200"
-            alt="Hero"
+            src="https://images.pexels.com/photos/4577408/pexels-photo-4577408.jpeg?auto=compress&cs=tinysrgb&w=1200"
+            alt="温暖的清晨阅读"
             style={styles.heroImage}
           />
           <div style={styles.heroText}>
             <div style={styles.logoHero}>
               <img src="/logo.svg" alt="凭什么" style={styles.logoHeroImage} />
             </div>
-            <h1 style={styles.heroTitle}>凭什么</h1>
-            <p style={styles.heroSubtitle}>一句话终结无效争吵的反击心法</p>
+            <h1 style={styles.heroTitle} className="gradient-text">凭什么</h1>
+            <p style={styles.heroSubtitle}>愿你温柔，也有锋芒</p>
             <p style={styles.heroDescription}>
-              从你开口说出「你听我解释」那五个字的那一刻起，你就已经输了。
+              这里不是教你怎么吵赢。<br />
+              而是让你在被指责、被审问、被委屈的那一刻，<br />
+              重新找回内心的那份从容。
             </p>
             <div style={styles.heroActions}>
               <Link to="/quick-guide" style={styles.primaryButton} className="fade-in">
@@ -113,7 +115,8 @@ export default function Home({ session }) {
       <section style={styles.quote}>
         <blockquote style={styles.blockquote}>
           <p style={styles.quoteText}>
-            「愿你的善良，从此带点锋芒。」
+            「愿你走过山河，依然眼中有光。<br />
+            愿你历经风雨，依然心中柔软。」
           </p>
         </blockquote>
       </section>
@@ -169,7 +172,7 @@ const styles = {
     paddingBottom: 'calc(var(--spacing-unit) * 10)',
   },
   hero: {
-    backgroundColor: 'var(--color-bg-secondary)',
+    background: 'linear-gradient(180deg, rgba(244, 234, 217, 0.6) 0%, rgba(251, 246, 238, 0) 100%)',
   },
   heroContent: {
     maxWidth: '1200px',
@@ -232,7 +235,7 @@ const styles = {
     borderRadius: 'var(--border-radius-md)',
     fontWeight: 600,
     fontSize: '1rem',
-    boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)',
+    boxShadow: '0 6px 20px rgba(201, 123, 99, 0.3)',
     transition: 'all var(--transition-fast)',
   },
   secondaryButton: {

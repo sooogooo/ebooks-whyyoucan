@@ -42,9 +42,11 @@ const styles = {
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'var(--color-bg)',
+    backgroundColor: 'rgba(251, 246, 238, 0.92)',
+    backdropFilter: 'blur(16px)',
+    WebkitBackdropFilter: 'blur(16px)',
     borderTop: '1px solid var(--color-border)',
-    boxShadow: '0 -2px 10px var(--color-shadow)',
+    boxShadow: '0 -4px 24px var(--color-shadow)',
     zIndex: 100,
   },
   container: {
