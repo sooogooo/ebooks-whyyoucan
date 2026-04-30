@@ -1,17 +1,34 @@
-import { useState } from 'react'
-import { Send, Sparkles, MessageSquare, Share2 } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Send, Sparkles, MessageSquare, Share2, History } from 'lucide-react'
 import ShareModal from '../components/ShareModal'
+import { askAI } from '../lib/ai'
+import { supabase } from '../lib/supabase'
+
+const WELCOME = {
+  role: 'assistant',
+  content: '你好！我是《凭什么》AI助手。我可以帮你：\n\n• 分析具体场景，提供应对建议\n• 解答关于反击技巧的问题\n• 模拟对话练习\n\n请告诉我你遇到的情况，或者问我任何关于反击心法的问题。',
+}
 
 export default function AIAssistant({ session }) {
-  const [messages, setMessages] = useState([
-    {
-      role: 'assistant',
-      content: '你好！我是《凭什么》AI助手。我可以帮你：\n\n• 分析具体场景，提供应对建议\n• 解答关于反击技巧的问题\n• 模拟对话练习\n\n请告诉我你遇到的情况，或者问我任何关于反击心法的问题。',
-    },
-  ])
+  const [messages, setMessages] = useState([WELCOME])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [shareData, setShareData] = useState(null)
+  const [history, setHistory] = useState([])
+  const [showHistory, setShowHistory] = useState(false)
+
+  useEffect(() => {
+    if (session) loadHistory()
+  }, [session])
+
+  const loadHistory = async () => {
+    const { data } = await supabase
+      .from('ai_conversations')
+      .select('id, question, answer, created_at')
+      .order('created_at', { ascending: false })
+      .limit(20)
+    if (data) setHistory(data)
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -19,23 +36,24 @@ export default function AIAssistant({ session }) {
 
     const userMessage = input.trim()
     setInput('')
-    setMessages([...messages, { role: 'user', content: userMessage }])
+    const nextMessages = [...messages, { role: 'user', content: userMessage }]
+    setMessages(nextMessages)
     setLoading(true)
 
     try {
-      const response = await generateAIResponse(userMessage, messages)
+      const apiMessages = nextMessages
+        .filter((m) => m !== WELCOME)
+        .map((m) => ({ role: m.role, content: m.content }))
+      const response = await askAI({ messages: apiMessages, mode: 'chat', persist: true })
       setMessages((prev) => [...prev, { role: 'assistant', content: response }])
-
-      if (session) {
-        await saveConversation(userMessage, response)
-      }
+      if (session) loadHistory()
     } catch (error) {
       console.error('Error generating response:', error)
       setMessages((prev) => [
         ...prev,
         {
           role: 'assistant',
-          content: '抱歉，我现在无法回应。这是一个演示版本，完整的AI功能需要配置AI服务。\n\n不过，我可以给你一些通用建议：\n\n1. 停顿3秒，不要立即反应\n2. 用「凭什么？」反问对方的依据\n3. 要求对方具体化指责\n4. 不要陷入自证陷阱\n\n请描述具体场景，我会尽力提供建议。',
+          content: '抱歉，我现在无法回应。请稍后重试。\n\n通用建议：\n\n1. 停顿3秒，不要立即反应\n2. 用「凭什么？」反问对方的依据\n3. 要求对方具体化指责\n4. 不要陷入自证陷阱',
         },
       ])
     } finally {
@@ -43,8 +61,13 @@ export default function AIAssistant({ session }) {
     }
   }
 
-  const saveConversation = async (question, answer) => {
-    if (!session) return
+  const loadConversation = (item) => {
+    setMessages([
+      WELCOME,
+      { role: 'user', content: item.question },
+      { role: 'assistant', content: item.answer },
+    ])
+    setShowHistory(false)
   }
 
   const quickQuestions = [
@@ -61,9 +84,33 @@ export default function AIAssistant({ session }) {
   return (
     <div style={styles.container}>
       <div style={styles.header}>
-        <Sparkles size={24} color="var(--color-primary)" />
-        <h1 style={styles.title}>AI助手</h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'calc(var(--spacing-unit) * 2)' }}>
+          <Sparkles size={24} color="var(--color-primary)" />
+          <h1 style={styles.title}>AI助手</h1>
+        </div>
+        {session && (
+          <button onClick={() => setShowHistory(!showHistory)} style={styles.historyBtn} title="历史对话">
+            <History size={18} />
+            <span>历史</span>
+          </button>
+        )}
       </div>
+
+      {showHistory && session && (
+        <div style={styles.historyPanel}>
+          <p style={styles.historyTitle}>最近对话</p>
+          {history.length === 0 ? (
+            <p style={styles.historyEmpty}>暂无历史对话</p>
+          ) : (
+            history.map((item) => (
+              <button key={item.id} onClick={() => loadConversation(item)} style={styles.historyItem}>
+                <p style={styles.historyQ}>{item.question}</p>
+                <p style={styles.historyDate}>{new Date(item.created_at).toLocaleString('zh-CN')}</p>
+              </button>
+            ))
+          )}
+        </div>
+      )}
 
       <div style={styles.chatContainer}>
         <div style={styles.messagesArea}>
@@ -171,31 +218,69 @@ export default function AIAssistant({ session }) {
   )
 }
 
-async function generateAIResponse(userMessage, history) {
-  await new Promise((resolve) => setTimeout(resolve, 1000))
-
-  const responses = {
-    伴侣: '当伴侣对你进行指责时：\n\n1. 停顿3秒，不要立即防守\n2. 拆解「从来」「总是」等全称量词\n3. 反问：「从来是指一次都没有吗？能举个具体例子吗？」\n4. 关注具体事件，不接受笼统的人格评判\n\n记住：不要陷入「我不是那样的人」的自证陷阱。',
-    同事: '面对同事甩锅：\n\n1. 保持冷静，用事实说话\n2. 陈述项目流程和每个人的职责\n3. 反问：「能具体说明是哪个环节出了问题吗？」\n4. 必要时拿出邮件、文档等证据\n\n职场上，规则和流程是你最好的保护。',
-    父母: '应对父母的「为你好」：\n\n1. 承认情感，但坚守边界\n2. 使用「我理解你的出发点，同时我需要...」\n3. 明确课题归属：「这件事的后果主要由我承担」\n4. 表达感受而非对错\n\n不要试图说服父母，而是表明你的立场。',
-    领导: '当领导使用模糊批评：\n\n1. 要求具体化：「能举个具体的例子吗？」\n2. 反问标准：「您期望看到什么样的表现？」\n3. 把形容词转化为可衡量的指标\n4. 了解改进方向\n\n让领导说清楚具体要求，而不是接受笼统的「态度不好」。',
-  }
-
-  for (const [key, response] of Object.entries(responses)) {
-    if (userMessage.includes(key)) {
-      return response
-    }
-  }
-
-  return '基于你的情况，我建议：\n\n1. **停顿3秒** - 给自己时间思考，不要立即反应\n\n2. **反问依据** - 用「凭什么？」「你的依据是什么？」让对方出示证据\n\n3. **要求具体化** - 把对方的指责从抽象转为具体事例\n\n4. **不自证** - 不要急于证明自己不是对方说的那样\n\n记住核心原则：不解释、不接球、不自证。\n\n如果你能提供更具体的场景细节，我可以给出更精准的建议。'
-}
-
 const styles = {
   container: {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
     backgroundColor: 'var(--color-bg-secondary)',
+  },
+  historyBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    padding: '6px 12px',
+    border: '1px solid var(--color-border)',
+    borderRadius: 'var(--border-radius-md)',
+    backgroundColor: 'var(--color-bg-secondary)',
+    color: 'var(--color-text)',
+    fontSize: '0.875rem',
+    cursor: 'pointer',
+  },
+  historyPanel: {
+    maxWidth: '900px',
+    width: '100%',
+    margin: '0 auto',
+    padding: 'calc(var(--spacing-unit) * 2) calc(var(--spacing-unit) * 3)',
+    backgroundColor: 'var(--color-bg)',
+    borderBottom: '1px solid var(--color-border)',
+    maxHeight: '40vh',
+    overflowY: 'auto',
+  },
+  historyTitle: {
+    fontSize: '0.875rem',
+    color: 'var(--color-text-secondary)',
+    marginBottom: '8px',
+    fontWeight: 600,
+  },
+  historyEmpty: {
+    fontSize: '0.875rem',
+    color: 'var(--color-text-tertiary)',
+    padding: '12px 0',
+  },
+  historyItem: {
+    display: 'block',
+    width: '100%',
+    textAlign: 'left',
+    padding: '10px 12px',
+    marginBottom: '6px',
+    backgroundColor: 'var(--color-bg-secondary)',
+    border: '1px solid var(--color-border)',
+    borderRadius: 'var(--border-radius-md)',
+    cursor: 'pointer',
+  },
+  historyQ: {
+    fontSize: '0.9rem',
+    color: 'var(--color-text)',
+    margin: 0,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
+  historyDate: {
+    fontSize: '0.75rem',
+    color: 'var(--color-text-tertiary)',
+    margin: '4px 0 0 0',
   },
   loginPrompt: {
     flex: 1,
@@ -220,6 +305,7 @@ const styles = {
   header: {
     display: 'flex',
     alignItems: 'center',
+    justifyContent: 'space-between',
     gap: 'calc(var(--spacing-unit) * 2)',
     padding: 'calc(var(--spacing-unit) * 3)',
     backgroundColor: 'var(--color-bg)',

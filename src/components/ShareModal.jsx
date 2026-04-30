@@ -1,8 +1,24 @@
 import { useState, useCallback, useEffect } from 'react'
 import { X, Download, Copy, Check, MessageCircle, Users } from 'lucide-react'
 import ShareCard, { useShareCard } from './ShareCard'
+import { supabase } from '../lib/supabase'
 
-export default function ShareModal({ isOpen, onClose, title, content, category, theme = 'wisdom' }) {
+async function trackShare({ title, category, platform, chapterId }) {
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    await supabase.from('share_events').insert({
+      user_id: user?.id || null,
+      chapter_id: chapterId || null,
+      title: title || '',
+      category: category || '',
+      platform,
+    })
+  } catch (err) {
+    console.error('track share failed', err)
+  }
+}
+
+export default function ShareModal({ isOpen, onClose, title, content, category, theme = 'wisdom', chapterId }) {
   const [activeTab, setActiveTab] = useState('card')
   const [copied, setCopied] = useState(false)
   const [savedImage, setSavedImage] = useState(null)
@@ -29,12 +45,13 @@ export default function ShareModal({ isOpen, onClose, title, content, category, 
       link.download = `凭什么-${title.slice(0, 10)}.png`
       link.href = dataUrl
       link.click()
+      trackShare({ title, category, platform: 'image', chapterId })
     } catch (err) {
       console.error('Save image failed:', err)
     } finally {
       setSaving(false)
     }
-  }, [title, content, category, theme, generateImage])
+  }, [title, content, category, theme, generateImage, chapterId])
 
   const handleCopyText = useCallback(async () => {
     const shareText = `【${title}】\n\n${content}\n\n—— 来自《凭什么》反击心法`
@@ -52,7 +69,8 @@ export default function ShareModal({ isOpen, onClose, title, content, category, 
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     }
-  }, [title, content])
+    trackShare({ title, category, platform: 'copy', chapterId })
+  }, [title, content, category, chapterId])
 
   const handleShareWeChat = useCallback(() => {
     const shareText = `【${title}】\n${content.slice(0, 100)}...\n\n来自《凭什么》反击心法`
@@ -80,12 +98,12 @@ export default function ShareModal({ isOpen, onClose, title, content, category, 
         title: `${title} - 凭什么`,
         text: shareText,
         url: window.location.href,
-      }).catch(() => {})
+      }).then(() => trackShare({ title, category, platform: 'native', chapterId })).catch(() => {})
       return
     }
 
     handleCopyText()
-  }, [title, content, handleCopyText])
+  }, [title, content, category, chapterId, handleCopyText])
 
   const handleShareFriendCircle = useCallback(async () => {
     setSaving(true)
@@ -98,18 +116,20 @@ export default function ShareModal({ isOpen, onClose, title, content, category, 
         const blob = await response.blob()
         const file = new File([blob], '凭什么分享.png', { type: 'image/png' })
         await navigator.share({ title: `${title} - 凭什么`, files: [file] })
+        trackShare({ title, category, platform: 'native-image', chapterId })
       } else {
         const link = document.createElement('a')
         link.download = `凭什么-${title.slice(0, 10)}.png`
         link.href = dataUrl
         link.click()
+        trackShare({ title, category, platform: 'image', chapterId })
       }
     } catch {
       // user cancelled or not supported
     } finally {
       setSaving(false)
     }
-  }, [title, content, category, theme, generateImage])
+  }, [title, content, category, theme, generateImage, chapterId])
 
   if (!isOpen) return null
 

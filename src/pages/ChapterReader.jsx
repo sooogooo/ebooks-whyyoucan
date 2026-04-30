@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import ReactMarkdown from 'react-markdown'
-import { ArrowLeft, Bookmark, CheckCircle, MessageSquare, Sparkles, Share2 } from 'lucide-react'
+import { ArrowLeft, Bookmark, CheckCircle, MessageSquare, Sparkles, Share2, Trash2 } from 'lucide-react'
 import ShareModal from '../components/ShareModal'
 import AIReadingAssistant from '../components/AIReadingAssistant'
 import AITextSelection from '../components/AITextSelection'
@@ -16,11 +16,35 @@ export default function ChapterReader({ session }) {
   const [selectedText, setSelectedText] = useState('')
   const [selectionPosition, setSelectionPosition] = useState(null)
   const [showShareModal, setShowShareModal] = useState(false)
+  const [bookmarks, setBookmarks] = useState([])
+  const [showBookmarks, setShowBookmarks] = useState(false)
   const contentRef = useRef(null)
+  const positionSaveTimer = useRef(null)
+  const hasRestoredPosition = useRef(false)
 
   useEffect(() => {
     loadChapter()
   }, [slug])
+
+  useEffect(() => {
+    if (chapter && session) loadBookmarks()
+  }, [chapter, session])
+
+  const loadBookmarks = async () => {
+    if (!session || !chapter) return
+    const { data } = await supabase
+      .from('bookmarks')
+      .select('*')
+      .eq('user_id', session.user.id)
+      .eq('chapter_id', chapter.id)
+      .order('created_at', { ascending: false })
+    if (data) setBookmarks(data)
+  }
+
+  const removeBookmark = async (id) => {
+    await supabase.from('bookmarks').delete().eq('id', id)
+    loadBookmarks()
+  }
 
   const loadChapter = async () => {
     try {
@@ -71,10 +95,44 @@ export default function ChapterReader({ session }) {
     }
 
     document.addEventListener('mouseup', handleSelection)
+    document.addEventListener('touchend', handleSelection)
     return () => {
       document.removeEventListener('mouseup', handleSelection)
+      document.removeEventListener('touchend', handleSelection)
     }
   }, [])
+
+  useEffect(() => {
+    if (!chapter || !session || hasRestoredPosition.current) return
+    if (progress?.last_position && progress.last_position > 5) {
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight
+      window.scrollTo({ top: (progress.last_position / 100) * scrollHeight, behavior: 'auto' })
+    }
+    hasRestoredPosition.current = true
+  }, [chapter, progress, session])
+
+  useEffect(() => {
+    if (!chapter || !session) return
+    const handleScroll = () => {
+      if (positionSaveTimer.current) clearTimeout(positionSaveTimer.current)
+      positionSaveTimer.current = setTimeout(() => {
+        const scrollHeight = document.documentElement.scrollHeight - window.innerHeight
+        if (scrollHeight <= 0) return
+        const percent = Math.min(100, Math.max(0, Math.round((window.scrollY / scrollHeight) * 100)))
+        supabase.from('user_progress').upsert({
+          user_id: session.user.id,
+          chapter_id: chapter.id,
+          last_position: percent,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'user_id,chapter_id' }).then(() => {})
+      }, 1500)
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      if (positionSaveTimer.current) clearTimeout(positionSaveTimer.current)
+    }
+  }, [chapter, session])
 
   const markAsComplete = async () => {
     if (!session || !chapter) return
@@ -126,6 +184,18 @@ export default function ChapterReader({ session }) {
           <span>返回</span>
         </Link>
         <div style={styles.headerActions}>
+          {session && (
+            <button
+              onClick={() => setShowBookmarks(!showBookmarks)}
+              style={styles.shareBtn}
+              title="我的书签"
+            >
+              <Bookmark size={18} />
+              {bookmarks.length > 0 && (
+                <span style={styles.badge}>{bookmarks.length}</span>
+              )}
+            </button>
+          )}
           <button
             onClick={() => setShowShareModal(true)}
             style={styles.shareBtn}
@@ -156,8 +226,33 @@ export default function ChapterReader({ session }) {
         </div>
       </div>
 
+      {showBookmarks && session && (
+        <div style={styles.bookmarksPanel}>
+          <h3 style={styles.bookmarksTitle}>本章书签 ({bookmarks.length})</h3>
+          {bookmarks.length === 0 ? (
+            <p style={styles.bookmarksEmpty}>
+              还没有书签。选中文字后点击"加入书签"即可保存。
+            </p>
+          ) : (
+            bookmarks.map((bm) => (
+              <div key={bm.id} style={styles.bookmarkItem}>
+                <p style={styles.bookmarkText}>{bm.content_excerpt}</p>
+                <div style={styles.bookmarkMeta}>
+                  <span style={styles.bookmarkDate}>
+                    {new Date(bm.created_at).toLocaleDateString('zh-CN')}
+                  </span>
+                  <button onClick={() => removeBookmark(bm.id)} style={styles.bookmarkDelete} title="删除">
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
       {chapter.image_url && (
-        <img src={chapter.image_url} alt={chapter.title} style={styles.headerImage} />
+        <img src={chapter.image_url} alt={chapter.title} style={styles.headerImage} loading="lazy" />
       )}
 
       <article style={styles.article}>
@@ -199,6 +294,9 @@ export default function ChapterReader({ session }) {
         position={selectionPosition}
         onClose={handleCloseSelection}
         onAskAI={handleAskAI}
+        chapterId={chapter?.id}
+        session={session}
+        onBookmarkSaved={loadBookmarks}
       />
 
       <AIReadingAssistant
@@ -227,6 +325,7 @@ export default function ChapterReader({ session }) {
           content={chapter.subtitle || chapter.content?.slice(0, 200) || ''}
           category={chapter.chapter_type === 'rule' ? '反击铁律' : '反击心法'}
           theme="wisdom"
+          chapterId={chapter.id}
         />
       )}
     </div>
@@ -278,6 +377,7 @@ const styles = {
     alignItems: 'center',
   },
   shareBtn: {
+    position: 'relative',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -289,6 +389,74 @@ const styles = {
     borderRadius: 'var(--border-radius-md)',
     cursor: 'pointer',
     transition: 'all var(--transition-fast)',
+  },
+  badge: {
+    position: 'absolute',
+    top: '-4px',
+    right: '-4px',
+    minWidth: '16px',
+    height: '16px',
+    padding: '0 4px',
+    fontSize: '0.7rem',
+    fontWeight: 700,
+    color: 'white',
+    backgroundColor: 'var(--color-primary)',
+    borderRadius: '8px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  bookmarksPanel: {
+    maxWidth: '800px',
+    margin: '0 auto calc(var(--spacing-unit) * 3)',
+    padding: 'calc(var(--spacing-unit) * 3)',
+    backgroundColor: 'var(--color-bg-secondary)',
+    border: '1px solid var(--color-border)',
+    borderRadius: 'var(--border-radius-lg)',
+  },
+  bookmarksTitle: {
+    fontSize: '1rem',
+    fontWeight: 600,
+    marginBottom: 'calc(var(--spacing-unit) * 2)',
+  },
+  bookmarksEmpty: {
+    fontSize: '0.875rem',
+    color: 'var(--color-text-tertiary)',
+  },
+  bookmarkItem: {
+    padding: 'calc(var(--spacing-unit) * 2)',
+    marginBottom: 'calc(var(--spacing-unit) * 1.5)',
+    backgroundColor: 'var(--color-bg)',
+    borderLeft: '3px solid var(--color-primary)',
+    borderRadius: 'var(--border-radius-sm)',
+  },
+  bookmarkText: {
+    fontSize: '0.95rem',
+    lineHeight: 1.6,
+    margin: 0,
+    color: 'var(--color-text)',
+  },
+  bookmarkMeta: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: '8px',
+  },
+  bookmarkDate: {
+    fontSize: '0.75rem',
+    color: 'var(--color-text-tertiary)',
+  },
+  bookmarkDelete: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '28px',
+    height: '28px',
+    border: 'none',
+    background: 'transparent',
+    color: 'var(--color-text-tertiary)',
+    cursor: 'pointer',
+    borderRadius: 'var(--border-radius-sm)',
   },
   aiButton: {
     display: 'flex',
