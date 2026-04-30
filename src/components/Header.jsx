@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom'
-import { User, LogOut, LogIn } from 'lucide-react'
+import { User, LogOut, LogIn, Search, Sun, Moon } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useState } from 'react'
 
-export default function Header({ session }) {
+export default function Header({ session, theme, onToggleTheme }) {
   const [showAuthModal, setShowAuthModal] = useState(false)
 
   const handleSignOut = async () => {
@@ -23,6 +23,14 @@ export default function Header({ session }) {
           </Link>
 
           <div style={styles.actions}>
+            <Link to="/search" style={styles.iconButton} title="搜索">
+              <Search size={20} />
+            </Link>
+            {onToggleTheme && (
+              <button onClick={onToggleTheme} style={styles.iconButton} title={theme === 'dark' ? '切换到浅色模式' : '切换到深色模式'}>
+                {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+              </button>
+            )}
             {session ? (
               <div style={styles.userMenu}>
                 <Link to="/progress" style={styles.iconButton}>

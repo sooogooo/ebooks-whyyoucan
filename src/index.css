@@ -32,18 +32,20 @@
   --shadow-lg: 0 10px 15px -3px var(--color-shadow);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-bg: #1a1a1a;
-    --color-bg-secondary: #2d2d2d;
-    --color-bg-tertiary: #404040;
-    --color-text: #f8f9fa;
-    --color-text-secondary: #adb5bd;
-    --color-text-tertiary: #6c757d;
-    --color-border: #404040;
-    --color-shadow: rgba(0, 0, 0, 0.3);
-    --color-primary-light: #1e3a8a;
-  }
+:root[data-theme="dark"] {
+  --color-bg: #1a1a1a;
+  --color-bg-secondary: #2d2d2d;
+  --color-bg-tertiary: #404040;
+  --color-text: #f8f9fa;
+  --color-text-secondary: #adb5bd;
+  --color-text-tertiary: #6c757d;
+  --color-border: #404040;
+  --color-shadow: rgba(0, 0, 0, 0.3);
+  --color-primary-light: #1e3a8a;
+}
+
+html {
+  transition: background-color var(--transition-normal), color var(--transition-normal);
 }
 
 html {

@@ -125,7 +125,7 @@ function ChapterCard({ chapter }) {
   return (
     <Link to={`/chapter/${chapter.slug}`} style={styles.chapterCard} className="card-hover">
       {chapter.image_url && (
-        <img src={chapter.image_url} alt={chapter.title} style={styles.chapterImage} />
+        <img src={chapter.image_url} alt={chapter.title} style={styles.chapterImage} loading="lazy" decoding="async" />
       )}
       <div style={styles.chapterContent}>
         <div>
