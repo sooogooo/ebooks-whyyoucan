@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { MessageCircle, RefreshCw, Sparkles, Share2 } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { MessageCircle, RefreshCw, Sparkles, Share2, Swords } from 'lucide-react'
 import ShareModal from '../components/ShareModal'
 
 const scenarios = [
@@ -136,6 +137,29 @@ export default function Practice({ session }) {
         <h1 style={styles.title}>实战练习</h1>
         <p style={styles.subtitle}>在安全的环境中练习反击技巧</p>
       </div>
+
+      <Link
+        to="/roleplay"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 'calc(var(--spacing-unit) * 2)',
+          maxWidth: '720px',
+          margin: '0 auto calc(var(--spacing-unit) * 3)',
+          padding: 'calc(var(--spacing-unit) * 2.5) calc(var(--spacing-unit) * 3)',
+          background: 'linear-gradient(135deg, #2563eb 0%, #10b981 100%)',
+          color: 'white',
+          borderRadius: 'var(--border-radius-lg)',
+          textDecoration: 'none',
+          boxShadow: '0 8px 24px rgba(37,99,235,0.25)',
+        }}
+      >
+        <Swords size={28} />
+        <div>
+          <div style={{ fontWeight: 700, fontSize: '1.05rem' }}>AI 角色扮演 · 实战对打</div>
+          <div style={{ fontSize: '0.85rem', opacity: 0.9 }}>和 5 种"对手"真人化对话，练习反击话术</div>
+        </div>
+      </Link>
 
       <div style={styles.content}>
         <div style={styles.scenarioCard}>

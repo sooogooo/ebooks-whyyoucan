@@ -6,6 +6,8 @@ import { ArrowLeft, Bookmark, CheckCircle, MessageSquare, Sparkles, Share2, Tras
 import ShareModal from '../components/ShareModal'
 import AIReadingAssistant from '../components/AIReadingAssistant'
 import AITextSelection from '../components/AITextSelection'
+import ScenarioSandbox from '../components/ScenarioSandbox'
+import ReflectionBox from '../components/ReflectionBox'
 
 export default function ChapterReader({ session }) {
   const { slug } = useParams()
@@ -300,6 +302,9 @@ export default function ChapterReader({ session }) {
             {chapter.content}
           </ReactMarkdown>
         </div>
+
+        <ScenarioSandbox chapterId={chapter.id} session={session} />
+        <ReflectionBox chapterId={chapter.id} chapterTitle={chapter.title} session={session} />
       </article>
 
       <AITextSelection

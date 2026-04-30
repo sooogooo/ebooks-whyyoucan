@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { ArrowRight, BookOpen, Zap, Target, Sparkles } from 'lucide-react'
 import GradientBackground from '../components/GradientBackground'
+import DailyQuote from '../components/DailyQuote'
+import ReadingMap from '../components/ReadingMap'
 
-export default function Home() {
+export default function Home({ session }) {
   const [chapters, setChapters] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -61,6 +63,10 @@ export default function Home() {
         </div>
       </section>
 
+      <section style={{ padding: 'calc(var(--spacing-unit) * 2) 0' }}>
+        <DailyQuote session={session} />
+      </section>
+
       <section style={styles.features}>
         <div style={styles.featuresGrid}>
           <FeatureCard
@@ -82,6 +88,10 @@ export default function Home() {
             color="var(--color-warning)"
           />
         </div>
+      </section>
+
+      <section style={{ padding: 'calc(var(--spacing-unit) * 2) 0' }}>
+        <ReadingMap session={session} chapters={chapters} />
       </section>
 
       <section style={styles.chapters}>

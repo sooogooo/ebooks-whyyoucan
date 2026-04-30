@@ -10,6 +10,7 @@ const AIAssistant = lazy(() => import('./pages/AIAssistant'))
 const Practice = lazy(() => import('./pages/Practice'))
 const Progress = lazy(() => import('./pages/Progress'))
 const Search = lazy(() => import('./pages/Search'))
+const Roleplay = lazy(() => import('./pages/Roleplay'))
 
 function PageLoading() {
   return (
@@ -76,13 +77,14 @@ function App() {
       <Suspense fallback={<PageLoading />}>
         <Routes>
           <Route path="/" element={<Layout session={session} theme={theme} onToggleTheme={toggleTheme} />}>
-            <Route index element={<Home />} />
+            <Route index element={<Home session={session} />} />
             <Route path="chapter/:slug" element={<ChapterReader session={session} />} />
             <Route path="quick-guide" element={<QuickGuide />} />
             <Route path="ai-assistant" element={<AIAssistant session={session} />} />
             <Route path="practice" element={<Practice session={session} />} />
             <Route path="progress" element={<Progress session={session} />} />
             <Route path="search" element={<Search />} />
+            <Route path="roleplay" element={<Roleplay session={session} />} />
           </Route>
         </Routes>
       </Suspense>
