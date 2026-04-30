@@ -246,7 +246,7 @@ export default function ChapterReader({ session }) {
           <h3 style={styles.bookmarksTitle}>本章书签 ({bookmarks.length})</h3>
           {bookmarks.length === 0 ? (
             <p style={styles.bookmarksEmpty}>
-              还没有书签。选中文字后点击"加入书签"即可保存。
+              还没有书签。选中文字后点击「加入书签」即可保存。
             </p>
           ) : (
             bookmarks.map((bm) => (

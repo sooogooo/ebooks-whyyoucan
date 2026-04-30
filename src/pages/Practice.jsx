@@ -7,17 +7,17 @@ const scenarios = [
   {
     id: 1,
     category: '伴侣',
-    situation: '你伴侣对你说："你从来不关心我的感受，你太自私了！"',
+    situation: '你伴侣对你说：『你从来不关心我的感受，你太自私了！』',
     attack: '你从来不关心我',
     image: 'https://images.pexels.com/photos/4101143/pexels-photo-4101143.jpeg?auto=compress&cs=tinysrgb&w=800',
     hints: [
-      '拆解"从来"这个全称量词',
+      '拆解「从来」这个全称量词',
       '反问具体的标准和例子',
       '不要陷入自证',
     ],
     goodResponses: [
-      '"从来"是指一次都没有吗？能举个具体的例子吗？',
-      '你说的"关心"标准是什么？我想了解具体指的是哪些行为。',
+      '「从来」是指一次都没有吗？能举个具体的例子吗？',
+      '你说的「关心」标准是什么？我想了解具体指的是哪些行为。',
       '我听到你现在不开心，你能告诉我具体是什么事情让你有这种感受吗？',
     ],
     badResponses: [
@@ -29,7 +29,7 @@ const scenarios = [
   {
     id: 2,
     category: '同事',
-    situation: '同事在会议上说："这个项目出问题，都是因为你没有做好沟通协调。"',
+    situation: '同事在会议上说：『这个项目出问题，都是因为你没有做好沟通协调。』',
     attack: '项目问题归咎于你',
     image: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=800',
     hints: [
@@ -51,8 +51,8 @@ const scenarios = [
   {
     id: 3,
     category: '父母',
-    situation: '父母说："我们都是为你好，你怎么就不听话呢？"',
-    attack: '用"为你好"进行道德绑架',
+    situation: '父母说：『我们都是为你好，你怎么就不听话呢？』',
+    attack: '用「为你好」进行道德绑架',
     image: 'https://images.pexels.com/photos/4101143/pexels-photo-4101143.jpeg?auto=compress&cs=tinysrgb&w=800',
     hints: [
       '承认情感，但坚守边界',
@@ -62,7 +62,7 @@ const scenarios = [
     goodResponses: [
       '我理解你们的出发点是好的，但这件事的结果主要由我承担，我想自己做决定。',
       '我感受到了你们的关心，同时我也需要为自己的人生负责。',
-      '"听话"的定义是什么？是完全按照你们说的做，还是可以有讨论的空间？',
+      '「听话」的定义是什么？是完全按照你们说的做，还是可以有讨论的空间？',
     ],
     badResponses: [
       '你们根本不是为我好，你们只是想控制我！（对抗）',
@@ -73,7 +73,7 @@ const scenarios = [
   {
     id: 4,
     category: '领导',
-    situation: '领导说："你这个态度有问题，工作不够积极主动。"',
+    situation: '领导说：『你这个态度有问题，工作不够积极主动。』',
     attack: '使用模糊的形容词批评',
     image: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800',
     hints: [
@@ -83,7 +83,7 @@ const scenarios = [
     ],
     goodResponses: [
       '您能具体说明一下是哪些方面的表现让您觉得我不够积极主动吗？',
-      '我想了解一下，"积极主动"的具体标准是什么？比如在哪些场景下，您期望看到什么样的行为？',
+      '我想了解一下，「积极主动」的具体标准是什么？比如在哪些场景下，您期望看到什么样的行为？',
       '能否给我举个例子，说明什么样的表现算是态度好、积极主动？',
     ],
     badResponses: [
@@ -95,7 +95,7 @@ const scenarios = [
   {
     id: 5,
     category: '网络',
-    situation: '网友评论："你这种观点就是典型的XX思维，太low了。"',
+    situation: '网友评论：『你这种观点就是典型的XX思维，太low了。』',
     attack: '贴标签+人身攻击',
     image: 'https://images.pexels.com/photos/4050315/pexels-photo-4050315.jpeg?auto=compress&cs=tinysrgb&w=800',
     hints: [
@@ -105,7 +105,7 @@ const scenarios = [
     ],
     goodResponses: [
       '（不回应，直接屏蔽/忽略）',
-      '"XX思维"具体指什么？能说清楚吗？',
+      '「XX思维」具体指什么？能说清楚吗？',
       '谢谢你的意见，祝你开心。（礼貌结束）',
     ],
     badResponses: [
@@ -157,7 +157,7 @@ export default function Practice({ session }) {
         <Swords size={28} />
         <div>
           <div style={{ fontWeight: 700, fontSize: '1.05rem' }}>AI 角色扮演 · 实战对打</div>
-          <div style={{ fontSize: '0.85rem', opacity: 0.9 }}>和 5 种"对手"真人化对话，练习反击话术</div>
+          <div style={{ fontSize: '0.85rem', opacity: 0.9 }}>和 5 种「对手」真人化对话，练习反击话术</div>
         </div>
       </Link>
 

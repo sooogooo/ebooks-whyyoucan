@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase'
 
 const CHAPTER_QUESTIONS = {
   default: [
-    '回想最近一次让你委屈的对话，对方使用了哪种"陷阱"？',
+    '回想最近一次让你委屈的对话，对方使用了哪种「陷阱」？',
     '如果时光倒流，你会如何用本章学到的方法回应？',
   ],
 }

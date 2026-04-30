@@ -25,7 +25,7 @@ export default function QuickGuide() {
             <h2 style={styles.formulaTitle}>核心公式</h2>
             <div style={styles.formulaBox}>
               <p style={styles.formulaText}>
-                攻击 → 停顿3秒 → 反问"凭什么？" → 把球踢回去
+                攻击 → 停顿3秒 → 反问『凭什么？』 → 把球踢回去
               </p>
             </div>
             <p style={styles.formulaNote}>
@@ -34,7 +34,7 @@ export default function QuickGuide() {
             <button
               onClick={() => shareContent(
                 '核心公式',
-                '攻击 → 停顿3秒 → 反问「凭什么？」→ 把球踢回去\n\n就这么简单。不解释，不辩护，不自证。把论证的负担还给对方。',
+                '攻击 → 停顿3秒 → 反问『凭什么？』→ 把球踢回去\n\n就这么简单。不解释，不辩护，不自证。把论证的负担还给对方。',
                 'bold'
               )}
               style={styles.shareSectionBtn}
@@ -88,7 +88,7 @@ export default function QuickGuide() {
             <button
               onClick={() => shareContent(
                 '万能起手式',
-                '基础版：「凭什么？」\n\n进阶版：\n- 你的依据是什么？\n- 谁给你的权力？\n- 你的标准是什么？\n- 你来定义一下？\n- 「从来」是指一次都没有吗？',
+                '基础版：『凭什么？』\n\n进阶版：\n- 你的依据是什么？\n- 谁给你的权力？\n- 你的标准是什么？\n- 你来定义一下？\n- 「从来」是指一次都没有吗？',
                 'warm'
               )}
               style={styles.shareSectionBtn}
@@ -102,17 +102,17 @@ export default function QuickGuide() {
             <div style={styles.starterMain}>
               <Zap size={32} color="var(--color-warning)" />
               <h3 style={styles.starterTitle}>基础版</h3>
-              <p style={styles.starterPhrase}>"凭什么？"</p>
+              <p style={styles.starterPhrase}>『凭什么？』</p>
             </div>
 
             <div style={styles.starterAdvanced}>
               <h4 style={styles.advancedTitle}>进阶版</h4>
               <ul style={styles.phraseList}>
-                <li>"你的依据是什么？"</li>
-                <li>"谁给你的权力？"</li>
-                <li>"你的标准是什么？"</li>
-                <li>"你来定义一下？"</li>
-                <li>""从来"是指一次都没有吗？"</li>
+                <li>『你的依据是什么？』</li>
+                <li>『谁给你的权力？』</li>
+                <li>『你的标准是什么？』</li>
+                <li>『你来定义一下？』</li>
+                <li>『「从来」是指一次都没有吗？』</li>
               </ul>
             </div>
           </div>
@@ -203,7 +203,7 @@ export default function QuickGuide() {
             <PhraseCard
               number="3"
               title="反问标准"
-              phrase="你说的'从来不''总是'是什么意思？能举个具体的例子吗？"
+              phrase="你说的「从来不」「总是」是什么意思？能举个具体的例子吗？"
             />
           </div>
         </section>
