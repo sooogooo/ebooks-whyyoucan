@@ -35,8 +35,9 @@
   --shadow-lg: 0 16px 40px var(--color-shadow);
 }
 
+:root[data-theme="night"],
 :root[data-theme="dark"] {
-  /* Warm dark — candlelit reading room */
+  /* Candlelit reading room */
   --color-bg: #1f1a15;
   --color-bg-secondary: #2a231c;
   --color-bg-tertiary: #3a2f25;
@@ -51,11 +52,39 @@
   --color-success: #9bc0a6;
 }
 
+:root[data-theme="minimal"] {
+  /* Cloud & paper — pure calm */
+  --color-bg: #fafafa;
+  --color-bg-secondary: #f2f2f0;
+  --color-bg-tertiary: #e5e5e3;
+  --color-text: #2a2a2a;
+  --color-text-secondary: #6b6b6b;
+  --color-text-tertiary: #9c9c9c;
+  --color-border: #e5e5e3;
+  --color-shadow: rgba(0, 0, 0, 0.06);
+  --color-primary: #5c6b5a;
+  --color-primary-hover: #475341;
+  --color-primary-light: #e8ece5;
+  --color-accent: #9c8a75;
+  --color-success: #7fa88a;
+}
+
 html {
   transition: background-color var(--transition-normal), color var(--transition-normal);
-  font-size: 16px;
+  font-size: calc(16px * var(--font-scale, 1));
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+:root[data-theme="minimal"] body {
+  background-image: none;
+}
+
+:root[data-theme="night"] body,
+:root[data-theme="dark"] body {
+  background-image:
+    radial-gradient(at 20% 10%, rgba(224, 160, 128, 0.08) 0, transparent 50%),
+    radial-gradient(at 80% 90%, rgba(155, 192, 166, 0.06) 0, transparent 50%);
 }
 
 body {
@@ -172,6 +201,42 @@ img {
 .slide-in-right { animation: slideInRight 0.6s ease forwards; }
 .slide-in-left { animation: slideInLeft 0.6s ease forwards; }
 .breathe { animation: breathe 4s ease-in-out infinite; }
+
+@keyframes pageFlipIn {
+  from {
+    opacity: 0;
+    transform: perspective(1600px) rotateY(-12deg) translateX(40px);
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(1600px) rotateY(0) translateX(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes pageFlipInReverse {
+  from {
+    opacity: 0;
+    transform: perspective(1600px) rotateY(12deg) translateX(-40px);
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(1600px) rotateY(0) translateX(0);
+    filter: blur(0);
+  }
+}
+
+.page-flip {
+  animation: pageFlipIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  transform-origin: left center;
+}
+
+.page-flip-reverse {
+  animation: pageFlipInReverse 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  transform-origin: right center;
+}
 
 .selection-highlight {
   background: linear-gradient(120deg, #f4dfd6 0%, #ead9bf 100%);

@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom'
-import { User, LogOut, LogIn, Search, Sun, Moon } from 'lucide-react'
+import { User, LogOut, LogIn, Search, Settings as SettingsIcon } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useState } from 'react'
+import ReadingSettingsPanel from './ReadingSettingsPanel'
 
-export default function Header({ session, theme, onToggleTheme }) {
+export default function Header({ session }) {
   const [showAuthModal, setShowAuthModal] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
@@ -26,11 +28,9 @@ export default function Header({ session, theme, onToggleTheme }) {
             <Link to="/search" style={styles.iconButton} title="搜索">
               <Search size={20} />
             </Link>
-            {onToggleTheme && (
-              <button onClick={onToggleTheme} style={styles.iconButton} title={theme === 'dark' ? '切换到浅色模式' : '切换到深色模式'}>
-                {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-              </button>
-            )}
+            <button onClick={() => setShowSettings(true)} style={styles.iconButton} title="阅读设置">
+              <SettingsIcon size={20} />
+            </button>
             {session ? (
               <div style={styles.userMenu}>
                 <Link to="/progress" style={styles.iconButton}>
@@ -51,6 +51,7 @@ export default function Header({ session, theme, onToggleTheme }) {
       </header>
 
       {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} />}
+      {showSettings && <ReadingSettingsPanel onClose={() => setShowSettings(false)} />}
     </>
   )
 }

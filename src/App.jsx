@@ -3,6 +3,8 @@ import { useState, useEffect, lazy, Suspense } from 'react'
 import { supabase } from './lib/supabase'
 import Layout from './components/Layout'
 import Home from './pages/Home'
+import { ReadingSettingsProvider } from './lib/readingSettings'
+import AmbientAudio from './components/AmbientAudio'
 
 const ChapterReader = lazy(() => import('./pages/ChapterReader'))
 const QuickGuide = lazy(() => import('./pages/QuickGuide'))
@@ -30,15 +32,6 @@ function PageLoading() {
 function App() {
   const [session, setSession] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [theme, setTheme] = useState(() => {
-    if (typeof window === 'undefined') return 'light'
-    return localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-  })
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme)
-    localStorage.setItem('theme', theme)
-  }, [theme])
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -54,8 +47,6 @@ function App() {
 
     return () => subscription.unsubscribe()
   }, [])
-
-  const toggleTheme = () => setTheme((t) => (t === 'light' ? 'dark' : 'light'))
 
   if (loading) {
     return (
@@ -73,22 +64,25 @@ function App() {
   }
 
   return (
-    <Router>
-      <Suspense fallback={<PageLoading />}>
-        <Routes>
-          <Route path="/" element={<Layout session={session} theme={theme} onToggleTheme={toggleTheme} />}>
-            <Route index element={<Home session={session} />} />
-            <Route path="chapter/:slug" element={<ChapterReader session={session} />} />
-            <Route path="quick-guide" element={<QuickGuide />} />
-            <Route path="ai-assistant" element={<AIAssistant session={session} />} />
-            <Route path="practice" element={<Practice session={session} />} />
-            <Route path="progress" element={<Progress session={session} />} />
-            <Route path="search" element={<Search />} />
-            <Route path="roleplay" element={<Roleplay session={session} />} />
-          </Route>
-        </Routes>
-      </Suspense>
-    </Router>
+    <ReadingSettingsProvider session={session}>
+      <Router>
+        <AmbientAudio />
+        <Suspense fallback={<PageLoading />}>
+          <Routes>
+            <Route path="/" element={<Layout session={session} />}>
+              <Route index element={<Home session={session} />} />
+              <Route path="chapter/:slug" element={<ChapterReader session={session} />} />
+              <Route path="quick-guide" element={<QuickGuide />} />
+              <Route path="ai-assistant" element={<AIAssistant session={session} />} />
+              <Route path="practice" element={<Practice session={session} />} />
+              <Route path="progress" element={<Progress session={session} />} />
+              <Route path="search" element={<Search />} />
+              <Route path="roleplay" element={<Roleplay session={session} />} />
+            </Route>
+          </Routes>
+        </Suspense>
+      </Router>
+    </ReadingSettingsProvider>
   )
 }
 

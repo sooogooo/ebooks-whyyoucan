@@ -270,7 +270,7 @@ export default function ChapterReader({ session }) {
         <img src={chapter.image_url} alt={chapter.title} style={styles.headerImage} loading="lazy" />
       )}
 
-      <article style={styles.article}>
+      <article key={slug} style={styles.article} className="paper page-flip">
         <header style={styles.articleHeader}>
           <h1 style={styles.title}>{chapter.title}</h1>
           {chapter.subtitle && (
@@ -536,9 +536,12 @@ const styles = {
     borderRadius: 'var(--border-radius-lg)',
   },
   article: {
-    maxWidth: '800px',
-    margin: '0 auto',
-    padding: '0 calc(var(--spacing-unit) * 3)',
+    maxWidth: '760px',
+    margin: 'calc(var(--spacing-unit) * 3) auto',
+    padding: 'calc(var(--spacing-unit) * 6) calc(var(--spacing-unit) * 5)',
+    borderRadius: 'var(--border-radius-lg)',
+    boxShadow: '0 12px 40px var(--color-shadow)',
+    border: '1px solid var(--color-border)',
   },
   articleHeader: {
     marginBottom: 'calc(var(--spacing-unit) * 6)',
