@@ -30,6 +30,19 @@ export default function ChapterReader({ session }) {
     if (chapter && session) loadBookmarks()
   }, [chapter, session])
 
+  useEffect(() => {
+    if (!chapter) return
+    const originalTitle = document.title
+    document.title = `${chapter.title} - 凭什么`
+    setMetaTag('description', chapter.subtitle || chapter.content?.slice(0, 140) || '')
+    setMetaTag('og:title', `${chapter.title} - 凭什么`, 'property')
+    setMetaTag('og:description', chapter.subtitle || '', 'property')
+    if (chapter.image_url) setMetaTag('og:image', chapter.image_url, 'property')
+    return () => {
+      document.title = originalTitle
+    }
+  }, [chapter])
+
   const loadBookmarks = async () => {
     if (!session || !chapter) return
     const { data } = await supabase
@@ -330,6 +343,17 @@ export default function ChapterReader({ session }) {
       )}
     </div>
   )
+}
+
+function setMetaTag(name, content, attr = 'name') {
+  if (!content) return
+  let tag = document.querySelector(`meta[${attr}="${name}"]`)
+  if (!tag) {
+    tag = document.createElement('meta')
+    tag.setAttribute(attr, name)
+    document.head.appendChild(tag)
+  }
+  tag.setAttribute('content', content)
 }
 
 const styles = {

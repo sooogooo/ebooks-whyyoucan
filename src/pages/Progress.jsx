@@ -1,17 +1,20 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { BookOpen, CheckCircle, Clock, TrendingUp, Bookmark as BookmarkIcon } from 'lucide-react'
+import { BookOpen, CheckCircle, Clock, TrendingUp, Bookmark as BookmarkIcon, Pencil, Trash2, Flame, Award, Target, Zap } from 'lucide-react'
 
 export default function Progress({ session }) {
   const [stats, setStats] = useState({
     totalChapters: 0,
     completedChapters: 0,
     readingTime: 0,
+    streak: 0,
   })
   const [progress, setProgress] = useState([])
   const [bookmarks, setBookmarks] = useState([])
   const [loading, setLoading] = useState(true)
+  const [editingBookmarkId, setEditingBookmarkId] = useState(null)
+  const [noteDraft, setNoteDraft] = useState('')
 
   useEffect(() => {
     if (session) {
@@ -40,12 +43,15 @@ export default function Progress({ session }) {
         .order('created_at', { ascending: false })
 
       const completed = userProgress?.filter((p) => p.completed).length || 0
-      const totalTime = chapters?.reduce((sum, ch) => sum + (ch.reading_time || 0), 0) || 0
+      const completedChapters = userProgress?.filter((p) => p.completed && p.chapters) || []
+      const readTimeSum = completedChapters.reduce((s, p) => s + (p.chapters.reading_time || 0), 0)
+      const streak = computeStreak(userProgress || [])
 
       setStats({
         totalChapters: chapters?.length || 0,
         completedChapters: completed,
-        readingTime: totalTime,
+        readingTime: readTimeSum,
+        streak,
       })
 
       setProgress(userProgress || [])
@@ -55,6 +61,24 @@ export default function Progress({ session }) {
     } finally {
       setLoading(false)
     }
+  }
+
+  const startEditNote = (bookmark) => {
+    setEditingBookmarkId(bookmark.id)
+    setNoteDraft(bookmark.note || '')
+  }
+
+  const saveNote = async (id) => {
+    await supabase.from('bookmarks').update({ note: noteDraft }).eq('id', id)
+    setEditingBookmarkId(null)
+    setNoteDraft('')
+    loadProgress()
+  }
+
+  const deleteBookmark = async (id) => {
+    if (!confirm('确定要删除这条书签吗？')) return
+    await supabase.from('bookmarks').delete().eq('id', id)
+    loadProgress()
   }
 
   if (!session) {
@@ -106,11 +130,47 @@ export default function Progress({ session }) {
           />
           <StatCard
             icon={<Clock size={32} />}
-            label="总阅读时长"
+            label="已读时长"
             value={`${stats.readingTime} 分钟`}
             color="var(--color-warning)"
           />
+          <StatCard
+            icon={<Flame size={32} />}
+            label="连续打卡"
+            value={`${stats.streak} 天`}
+            color="var(--color-error)"
+          />
         </div>
+
+        <section style={styles.section}>
+          <h2 style={styles.sectionTitle}>
+            <Award size={24} />
+            成就徽章
+          </h2>
+          <div style={styles.achievementsGrid}>
+            {ACHIEVEMENTS.map((a) => {
+              const unlocked = a.check(stats)
+              return (
+                <div
+                  key={a.id}
+                  style={{
+                    ...styles.achievement,
+                    ...(unlocked ? styles.achievementUnlocked : styles.achievementLocked),
+                  }}
+                  title={unlocked ? '已解锁' : '未解锁'}
+                >
+                  <div style={{ ...styles.achievementIcon, color: unlocked ? 'var(--color-warning)' : 'var(--color-text-tertiary)' }}>
+                    {a.icon}
+                  </div>
+                  <div style={styles.achievementTextWrap}>
+                    <p style={styles.achievementLabel}>{a.label}</p>
+                    <p style={styles.achievementDesc}>{a.desc}</p>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </section>
 
         <div style={styles.progressBar}>
           <div style={styles.progressBarLabel}>
@@ -157,22 +217,59 @@ export default function Progress({ session }) {
               {bookmarks.map((bookmark) => (
                 <div key={bookmark.id} style={styles.bookmarkItem}>
                   <Link
-                    to={`/chapter/${bookmark.chapters.slug}`}
+                    to={`/chapter/${bookmark.chapters?.slug || ''}`}
                     style={styles.bookmarkChapter}
                   >
-                    {bookmark.chapters.title}
+                    {bookmark.chapters?.title || '章节'}
                   </Link>
                   <p style={styles.bookmarkExcerpt}>
                     "{bookmark.content_excerpt}"
                   </p>
-                  {bookmark.note && (
-                    <p style={styles.bookmarkNote}>
-                      <strong>笔记：</strong>{bookmark.note}
-                    </p>
+
+                  {editingBookmarkId === bookmark.id ? (
+                    <div style={styles.noteEditor}>
+                      <textarea
+                        value={noteDraft}
+                        onChange={(e) => setNoteDraft(e.target.value)}
+                        placeholder="写下你的想法..."
+                        style={styles.noteTextarea}
+                        rows={3}
+                      />
+                      <div style={styles.noteActions}>
+                        <button onClick={() => saveNote(bookmark.id)} style={styles.noteSaveBtn}>
+                          保存
+                        </button>
+                        <button onClick={() => setEditingBookmarkId(null)} style={styles.noteCancelBtn}>
+                          取消
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      {bookmark.note && (
+                        <p style={styles.bookmarkNote}>
+                          <strong>笔记：</strong>{bookmark.note}
+                        </p>
+                      )}
+                    </>
                   )}
-                  <p style={styles.bookmarkDate}>
-                    {new Date(bookmark.created_at).toLocaleDateString('zh-CN')}
-                  </p>
+
+                  <div style={styles.bookmarkFooter}>
+                    <p style={styles.bookmarkDate}>
+                      {new Date(bookmark.created_at).toLocaleDateString('zh-CN')}
+                    </p>
+                    {editingBookmarkId !== bookmark.id && (
+                      <div style={styles.bookmarkActions}>
+                        <button onClick={() => startEditNote(bookmark)} style={styles.bookmarkActionBtn} title="编辑笔记">
+                          <Pencil size={14} />
+                          <span>{bookmark.note ? '编辑笔记' : '添加笔记'}</span>
+                        </button>
+                        <button onClick={() => deleteBookmark(bookmark.id)} style={styles.bookmarkActionBtn} title="删除">
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -192,6 +289,39 @@ export default function Progress({ session }) {
     </div>
   )
 }
+
+function computeStreak(progressRows) {
+  const dates = new Set(
+    progressRows
+      .filter((p) => p.updated_at)
+      .map((p) => new Date(p.updated_at).toISOString().slice(0, 10))
+  )
+  if (dates.size === 0) return 0
+  let streak = 0
+  const today = new Date()
+  for (let i = 0; i < 365; i++) {
+    const d = new Date(today)
+    d.setDate(today.getDate() - i)
+    const key = d.toISOString().slice(0, 10)
+    if (dates.has(key)) {
+      streak++
+    } else if (i === 0) {
+      continue
+    } else {
+      break
+    }
+  }
+  return streak
+}
+
+const ACHIEVEMENTS = [
+  { id: 'first', label: '开卷有益', desc: '完成第一章', icon: <BookOpen size={24} />, check: (s) => s.completedChapters >= 1 },
+  { id: 'five', label: '渐入佳境', desc: '完成 5 章', icon: <Target size={24} />, check: (s) => s.completedChapters >= 5 },
+  { id: 'ten', label: '坚持不懈', desc: '完成 10 章', icon: <Zap size={24} />, check: (s) => s.completedChapters >= 10 },
+  { id: 'all', label: '功成名就', desc: '读完全书', icon: <Award size={24} />, check: (s) => s.totalChapters > 0 && s.completedChapters >= s.totalChapters },
+  { id: 'streak3', label: '三日连击', desc: '连续 3 天阅读', icon: <Flame size={24} />, check: (s) => s.streak >= 3 },
+  { id: 'streak7', label: '一周习惯', desc: '连续 7 天阅读', icon: <Flame size={24} />, check: (s) => s.streak >= 7 },
+]
 
 function StatCard({ icon, label, value, color }) {
   return (
@@ -375,6 +505,113 @@ const styles = {
   emptyText: {
     fontSize: '1.125rem',
     color: 'var(--color-text-secondary)',
+  },
+  achievementsGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+    gap: 'calc(var(--spacing-unit) * 2)',
+  },
+  achievement: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 'calc(var(--spacing-unit) * 2)',
+    padding: 'calc(var(--spacing-unit) * 2.5)',
+    borderRadius: 'var(--border-radius-lg)',
+    border: '1px solid var(--color-border)',
+    transition: 'all var(--transition-fast)',
+  },
+  achievementUnlocked: {
+    backgroundColor: 'var(--color-bg-secondary)',
+    borderColor: 'var(--color-warning)',
+  },
+  achievementLocked: {
+    backgroundColor: 'var(--color-bg-secondary)',
+    opacity: 0.5,
+  },
+  achievementIcon: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '44px',
+    height: '44px',
+    borderRadius: '50%',
+    backgroundColor: 'var(--color-bg)',
+    flexShrink: 0,
+  },
+  achievementTextWrap: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '2px',
+  },
+  achievementLabel: {
+    fontSize: '0.95rem',
+    fontWeight: 600,
+    margin: 0,
+    color: 'var(--color-text)',
+  },
+  achievementDesc: {
+    fontSize: '0.8rem',
+    color: 'var(--color-text-secondary)',
+    margin: 0,
+  },
+  bookmarkFooter: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 'calc(var(--spacing-unit) * 1.5)',
+  },
+  bookmarkActions: {
+    display: 'flex',
+    gap: 'calc(var(--spacing-unit) * 1)',
+  },
+  bookmarkActionBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px',
+    padding: '4px 10px',
+    fontSize: '0.75rem',
+    color: 'var(--color-text-secondary)',
+    backgroundColor: 'var(--color-bg)',
+    border: '1px solid var(--color-border)',
+    borderRadius: 'var(--border-radius-sm)',
+    cursor: 'pointer',
+  },
+  noteEditor: {
+    marginTop: 'calc(var(--spacing-unit) * 1.5)',
+  },
+  noteTextarea: {
+    width: '100%',
+    padding: 'calc(var(--spacing-unit) * 1.5)',
+    border: '1px solid var(--color-border)',
+    borderRadius: 'var(--border-radius-md)',
+    fontSize: '0.9rem',
+    fontFamily: 'inherit',
+    backgroundColor: 'var(--color-bg)',
+    color: 'var(--color-text)',
+    resize: 'vertical',
+  },
+  noteActions: {
+    display: 'flex',
+    gap: 'calc(var(--spacing-unit) * 1)',
+    marginTop: 'calc(var(--spacing-unit) * 1)',
+  },
+  noteSaveBtn: {
+    padding: '6px 14px',
+    backgroundColor: 'var(--color-primary)',
+    color: 'white',
+    fontSize: '0.85rem',
+    border: 'none',
+    borderRadius: 'var(--border-radius-sm)',
+    cursor: 'pointer',
+  },
+  noteCancelBtn: {
+    padding: '6px 14px',
+    backgroundColor: 'transparent',
+    color: 'var(--color-text-secondary)',
+    fontSize: '0.85rem',
+    border: '1px solid var(--color-border)',
+    borderRadius: 'var(--border-radius-sm)',
+    cursor: 'pointer',
   },
   startButton: {
     padding: 'calc(var(--spacing-unit) * 2) calc(var(--spacing-unit) * 4)',
