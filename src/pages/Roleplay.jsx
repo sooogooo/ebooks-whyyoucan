@@ -140,7 +140,7 @@ export default function Roleplay({ session }) {
         </div>
         <button onClick={generateReport} disabled={reporting} style={styles.reportBtn}>
           <ClipboardCheck size={16} />
-          {reporting ? '分析中...' : '复盘'}
+          {reporting ? '分析中……' : '复盘'}
         </button>
       </div>
 
@@ -164,7 +164,7 @@ export default function Roleplay({ session }) {
         ))}
         {loading && (
           <div style={{ ...styles.bubble, alignSelf: 'flex-start', backgroundColor: 'var(--color-bg-secondary)' }}>
-            <span style={{ color: 'var(--color-text-secondary)' }}>对方正在回复...</span>
+            <span style={{ color: 'var(--color-text-secondary)' }}>对方正在回复……</span>
           </div>
         )}
 
@@ -188,7 +188,7 @@ export default function Roleplay({ session }) {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && send()}
-          placeholder="你的回应..."
+          placeholder="你的回应……"
           style={styles.input}
         />
         <button onClick={send} disabled={loading || !input.trim()} style={styles.sendBtn}>

@@ -52,7 +52,7 @@ export default function Search() {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="搜索章节标题与内容..."
+          placeholder="搜索章节标题与内容……"
           style={styles.input}
           autoFocus
         />
@@ -64,7 +64,7 @@ export default function Search() {
       </div>
 
       <div style={styles.body}>
-        {loading && <p style={styles.status}>搜索中...</p>}
+        {loading && <p style={styles.status}>搜索中……</p>}
 
         {!loading && !searched && !query && (
           <div style={styles.empty}>

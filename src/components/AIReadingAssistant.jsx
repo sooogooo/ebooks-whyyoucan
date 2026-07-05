@@ -142,7 +142,7 @@ export default function AIReadingAssistant({ chapterContent, chapterTitle, sessi
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="问我任何问题..."
+            placeholder="问我任何问题……"
             style={styles.input}
             disabled={loading}
           />

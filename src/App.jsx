@@ -24,7 +24,7 @@ function PageLoading() {
       color: 'var(--color-text-secondary)',
       fontSize: '1rem',
     }}>
-      加载中...
+      加载中……
     </div>
   )
 }

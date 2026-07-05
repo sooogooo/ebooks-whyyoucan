@@ -67,7 +67,7 @@ export default function AITextSelection({ selectedText, position, onClose, onAsk
         <div style={styles.actions}>
           <button onClick={handleExplain} style={styles.actionButton} disabled={loading}>
             <Sparkles size={16} />
-            <span>{loading ? '分析中...' : '解释这段话'}</span>
+            <span>{loading ? '分析中……' : '解释这段话'}</span>
           </button>
           <button onClick={handleAskAI} style={styles.actionButton}>
             <MessageSquare size={16} />
@@ -76,7 +76,7 @@ export default function AITextSelection({ selectedText, position, onClose, onAsk
           {chapterId && (
             <button onClick={handleBookmark} style={styles.actionButton} disabled={saving || saved}>
               {saved ? <Check size={16} color="var(--color-success)" /> : <Bookmark size={16} />}
-              <span>{saved ? '已收藏' : saving ? '保存中...' : '加入书签'}</span>
+              <span>{saved ? '已收藏' : saving ? '保存中……' : '加入书签'}</span>
             </button>
           )}
         </div>

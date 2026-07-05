@@ -100,7 +100,7 @@ export default function Home({ session }) {
         <h2 style={styles.sectionTitle}>开始阅读</h2>
 
         {loading ? (
-          <div style={styles.loading}>加载中...</div>
+          <div style={styles.loading}>加载中……</div>
         ) : chapters.length > 0 ? (
           <div style={styles.chapterList}>
             {chapters.map((chapter) => (
@@ -160,7 +160,7 @@ function EmptyState() {
   return (
     <div style={styles.emptyState}>
       <BookOpen size={48} color="var(--color-text-tertiary)" />
-      <p style={styles.emptyText}>内容正在加载...</p>
+      <p style={styles.emptyText}>内容正在加载……</p>
       <p style={styles.emptyHint}>请稍后刷新页面查看章节内容</p>
     </div>
   )

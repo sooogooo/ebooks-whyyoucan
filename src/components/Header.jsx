@@ -110,7 +110,7 @@ function AuthModal({ onClose }) {
           {error && <p style={styles.error}>{error}</p>}
 
           <button type="submit" style={styles.submitButton} disabled={loading}>
-            {loading ? '处理中...' : (isLogin ? '登录' : '注册')}
+            {loading ? '处理中……' : (isLogin ? '登录' : '注册')}
           </button>
         </form>
 

@@ -187,7 +187,7 @@ export default function AIAssistant({ session }) {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="描述你的情况或提问..."
+            placeholder="描述你的情况或提问……"
             style={styles.input}
             disabled={loading}
           />

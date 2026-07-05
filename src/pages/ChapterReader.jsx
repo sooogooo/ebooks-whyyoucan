@@ -179,7 +179,7 @@ export default function ChapterReader({ session }) {
   }
 
   if (loading) {
-    return <div style={styles.loading}>加载中...</div>
+    return <div style={styles.loading}>加载中……</div>
   }
 
   if (!chapter) {

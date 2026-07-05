@@ -104,7 +104,7 @@ export default function DailyQuote({ session }) {
         {!flipped ? (
           <>
             <p style={styles.quoteText}>“{quote.text}”</p>
-            {quote.author_note && <p style={styles.note}>— {quote.author_note}</p>}
+            {quote.author_note && <p style={styles.note}>—— {quote.author_note}</p>}
             {quote.chapters?.title && (
               <p style={styles.source}>出自 《{quote.chapters.title}》</p>
             )}

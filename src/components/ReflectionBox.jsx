@@ -97,7 +97,7 @@ export default function ReflectionBox({ chapterId, chapterTitle, session }) {
       <textarea
         value={answer}
         onChange={(e) => setAnswer(e.target.value)}
-        placeholder="写下你的答案，只有你自己能看到..."
+        placeholder="写下你的答案，只有你自己能看到……"
         style={styles.textarea}
         rows={4}
       />
@@ -114,7 +114,7 @@ export default function ReflectionBox({ chapterId, chapterTitle, session }) {
           }}
         >
           {saved ? <Check size={16} /> : <Send size={16} />}
-          <span>{saved ? '已保存' : saving ? '保存中...' : '保存'}</span>
+          <span>{saved ? '已保存' : saving ? '保存中……' : '保存'}</span>
         </button>
       </div>
     </div>

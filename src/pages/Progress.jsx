@@ -100,7 +100,7 @@ export default function Progress({ session }) {
 
   if (loading) {
     return (
-      <div style={styles.loading}>加载中...</div>
+      <div style={styles.loading}>加载中……</div>
     )
   }
 
@@ -231,7 +231,7 @@ export default function Progress({ session }) {
                       <textarea
                         value={noteDraft}
                         onChange={(e) => setNoteDraft(e.target.value)}
-                        placeholder="写下你的想法..."
+                        placeholder="写下你的想法……"
                         style={styles.noteTextarea}
                         rows={3}
                       />

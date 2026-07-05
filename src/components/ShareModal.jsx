@@ -73,7 +73,7 @@ export default function ShareModal({ isOpen, onClose, title, content, category, 
   }, [title, content, category, chapterId])
 
   const handleShareWeChat = useCallback(() => {
-    const shareText = `【${title}】\n${content.slice(0, 100)}...\n\n来自《凭什么》反击心法`
+    const shareText = `【${title}】\n${content.slice(0, 100)}……\n\n来自《凭什么》反击心法`
 
     if (isWeChatBrowser() && window.wx) {
       try {
@@ -184,7 +184,7 @@ export default function ShareModal({ isOpen, onClose, title, content, category, 
                   <div style={styles.shareIcon}>
                     <Download size={24} color="var(--color-primary)" />
                   </div>
-                  <span style={styles.shareLabel}>{saving ? '生成中...' : '保存图片'}</span>
+                  <span style={styles.shareLabel}>{saving ? '生成中……' : '保存图片'}</span>
                 </button>
               </div>
             </div>
