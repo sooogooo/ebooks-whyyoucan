@@ -26,21 +26,24 @@ export default function Progress({ session }) {
 
   const loadProgress = async () => {
     try {
-      const { data: chapters } = await supabase
-        .from('chapters')
-        .select('*')
-        .order('chapter_order')
-
-      const { data: userProgress } = await supabase
-        .from('user_progress')
-        .select('*, chapters(*)')
-        .eq('user_id', session.user.id)
-
-      const { data: userBookmarks } = await supabase
-        .from('bookmarks')
-        .select('*, chapters(title, slug)')
-        .eq('user_id', session.user.id)
-        .order('created_at', { ascending: false })
+      const [
+        { count: totalChapters },
+        { data: userProgress },
+        { data: userBookmarks },
+      ] = await Promise.all([
+        supabase
+          .from('chapters')
+          .select('id', { count: 'exact', head: true }),
+        supabase
+          .from('user_progress')
+          .select('*, chapters(title, slug, reading_time)')
+          .eq('user_id', session.user.id),
+        supabase
+          .from('bookmarks')
+          .select('*, chapters(title, slug)')
+          .eq('user_id', session.user.id)
+          .order('created_at', { ascending: false }),
+      ])
 
       const completed = userProgress?.filter((p) => p.completed).length || 0
       const completedChapters = userProgress?.filter((p) => p.completed && p.chapters) || []
@@ -48,7 +51,7 @@ export default function Progress({ session }) {
       const streak = computeStreak(userProgress || [])
 
       setStats({
-        totalChapters: chapters?.length || 0,
+        totalChapters: totalChapters || 0,
         completedChapters: completed,
         readingTime: readTimeSum,
         streak,

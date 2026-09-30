@@ -18,7 +18,7 @@ export default function Home({ session }) {
     try {
       const { data, error } = await supabase
         .from('chapters')
-        .select('*')
+        .select('id, slug, title, subtitle, chapter_type, chapter_order, reading_time, image_url')
         .order('chapter_order')
 
       if (error) throw error
@@ -39,6 +39,7 @@ export default function Home({ session }) {
             src="https://images.pexels.com/photos/4577408/pexels-photo-4577408.jpeg?auto=compress&cs=tinysrgb&w=1200"
             alt="温暖的清晨阅读"
             style={styles.heroImage}
+            fetchpriority="high"
           />
           <div style={styles.heroText}>
             <div style={styles.logoHero}>
